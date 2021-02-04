@@ -5,6 +5,10 @@ require "uri"
 require "json"
 require "csv"
 
+CSV_FILE_NULL_LIST = "worksにないデータ一覧.csv"
+CSV_FILE_NOT_NULL_LIST = "worksにあるデータ一覧.csv"
+CSV_FILE_WORKS_LIST = "追加するリスト.csv"
+
 CSV_FILE_SF = "SF_ファンタジー.csv"
 CSV_FILE_ROBOT_MEKA = "ロボット_メカ.csv"
 CSV_FILE_ACTION_BATTLE = "アクション_バトル.csv"
@@ -74,7 +78,6 @@ end
 
 #API実行｜jsonデータを配列へ変換し返す
 def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=1987-autumn\&page=1")
-  #返ってきたjsonデータをrubyの配列に変換
   req_url = URI.parse(url)
   json = Net::HTTP.get(req_url)
   response = JSON.parse(json)
@@ -144,9 +147,13 @@ end
 
 #モデルからあいまい検索してくる
 def find_by_like_from_model(model_name, fields, conditions)
-  model_name.find_by("#{fields} like?", "%#{conditions}%")
+  model_name.find_by("#{fields} like ?", "%#{conditions.slice(0..3)}%")
 end
 
+#先頭から4文字抽出した検索結果を複数取得してくる
+def where_array_from_model(model_name, fields, conditions)
+  model_name.where("#{fields} like ?", "%#{conditions.slice(0..4)}%")
+end
 private
 
 #シーズンの追加
@@ -280,48 +287,88 @@ def add_work_data
   end
 end
 
-# def get_model_find_by(model, conditions, value)
-#   model_data ||= model.find_by("#{conditions}:" value)
-# end
+#アニメとタグのデータを紐付ける
+def add_worktags_data
+  works = Work.all
+  count = 1
+  work_list = Hash.new
+  works.each do |work|
+    danimes = where_array_from_model(Danime, "title" ,work.title)
+    danimes.each do |danime|
+      if !danime.nil?
+        Worktag.find_or_create_by(
+        work_id: work.id,
+        tag_id:  danime.tag_id,
+        )
+      else
+        work_list.merge!(work.title => danime&.id)
+        puts "tag_count#{count}：作品名：#{work.title}"
+        count += 1
+      end
+    end
+  end
+  puts "ループ終了:NULL=#{work_list.size}"
+end
 
-# #アニメとタグのデータを紐付ける
-# def add_worktags_data
-  
-#   Worktag.find_or_create_by(
-#     work_id: ,
-#     tag_id:  ,
-#   )
-  
+#NULLデータ一覧をcsvファイルへ出力する
+def create_csv_data(columns = nil)
+  works = Work.all
+  csv_data = CSV.open("db/data/csv/#{CSV_FILE_WORKS_LIST}", "w") do |csv|
+    column_names = %w(work_id tag_id danime_title work_title)
+    column_names = %w(id  title) if columns.nil?
+    #最初の1行目にカラム設定
+    csv << column_names
+    
+    # column_valuesに代入するカラム値を定義します。
+    works.each do |work|
+      danimes = where_array_from_model(Danme, "title", work.title)
+      danimes.each do |danime|
+        column_values = [
+          work.id,
+          danime&.tag_id,
+          danime&.title,
+          work.title,
+        ]
+        # csv << column_valueshは表の行に入る値を定義します。
+        csv << column_values
+        
+      end
+    end
+  end
+end
 
-# end
+def create_csv_not_null_data(columns = nil)
+  works = Work.all
+  csv_data = CSV.open("db/data/csv/#{CSV_FILE_NOT_NULL_LIST}", "w") do |csv|
+    column_names = %w(work_id tag_id danime_title work_title)
+    column_names = %w(id  title) if columns.nil?
+    #最初の1行目にカラム設定
+    csv << column_names
+    
+    # column_valuesに代入するカラム値を定義します。
+    works.each do |work|
+      danime = Danime.find_by(title: "#{work.title}")
+      if danime.nil?
+        column_values = [
+          work.id,
+          # danime&.tag_id,
+          # danime&.title,
+          work.title,
+        ]
+        # csv << column_valueshは表の行に入る値を定義します。
+        csv << column_values
+      end
 
-# def create_csv_data
-#   csv_data = CSV.generate do |csv|
-#     column_names = %w(id tag_id タイトル)
-#     #ヘッダーを空白ごとに設定
-#     csv << column_names
-
-#     # # column_valuesに代入するカラム値を定義します。
-#     # posts.each do |post|
-#     #   column_values = [
-#     #     post.user.name,
-#     #     post.title,
-#     #     post.body,
-#     #           ]
-#     # # csv << column_valueshは表の行に入る値を定義します。
-#     #   csv << column_values
-#     # end
-#   end
-#   # csv出力のファイル名を定義します。
-#   send_data(csv_data, filename: "投稿一覧.csv")
-# end
+    end
+  end
+end
 
 #csvファイルからデータを取得してくる
 def add_danime_data(tags = "tags")
   count = 1
   if tags == "tags"
     CSV.foreach("db/data/csv/#{CSV_FILE_TAG}", headers: true) do |row|
-        Tag.find_or_create_by(name: row["title"])
+      Tag.find_or_create_by(name: row["title"])
       puts "デバッグ#{count}/タグ名：#{row["title"]}"
       count += 1
     end
@@ -343,7 +390,7 @@ def add_danime_data(tags = "tags")
   end
 end
 
-add_danime_data("danime")
-# add_danime_data
-
 # common_add_model_data("organizations")
+# create_csv_data("NOT_NULL")
+# create_csv_not_null_data("NUL_NULL")
+add_worktags_data
