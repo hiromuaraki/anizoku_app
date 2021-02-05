@@ -8,6 +8,7 @@ require "csv"
 CSV_FILE_NULL_LIST = "worksにないデータ一覧.csv"
 CSV_FILE_NOT_NULL_LIST = "worksにあるデータ一覧.csv"
 CSV_FILE_WORKS_LIST = "追加するリスト.csv"
+CSV_FILE_WORKS_CAST_LIST = "追加データ一覧.csv"
 
 CSV_FILE_SF = "SF_ファンタジー.csv"
 CSV_FILE_ROBOT_MEKA = "ロボット_メカ.csv"
@@ -150,10 +151,69 @@ def find_by_like_from_model(model_name, fields, conditions)
   model_name.find_by("#{fields} like ?", "%#{conditions.slice(0..3)}%")
 end
 
-#先頭から4文字抽出した検索結果を複数取得してくる
-def where_array_from_model(model_name, fields, conditions)
+#先頭から4文字抽出した検索結果を配列で取得
+def where_like_from_model(model_name, fields, conditions)
   model_name.where("#{fields} like ?", "%#{conditions.slice(0..4)}%")
 end
+
+#csvファイルへ書き出す（追記モード）
+def common_write_csv_file_model_data(parent_model, child_model, csv_file_path, mode=nil)
+  parent_data = parent_model.all
+  csv_data = CSV.open("db/data/csv/#{csv_file_path}", "w") do |csv|
+    column_names = %w(work_id cast_id work_title cast_title cast_name)
+    column_names = %w(id  title) if mode.nil?
+    #最初の1行目にカラム設定
+    csv << column_names
+    
+    # column_valuesに代入するカラム値を定義します。
+    parent_data.each do |parent|
+      child_data = child_model.where(work_title: parent.title)
+      child_data.each do |child|
+        
+        if !child.nil?
+          column_values = [
+            parent.id,
+            child.id,
+            parent.title,
+            child.work_title,
+            child.name
+          ]
+          # csv << column_valueshは表の行に入る値を定義します。
+          csv << column_values
+        end
+      end
+    end
+  end
+  puts "ループ終了です〜"
+end
+
+#データ一覧をcsvファイルへ出力する
+def create_csv_data(columns = nil)
+  works = Work.all
+  csv_data = CSV.open("db/data/csv/#{CSV_FILE_WORKS_LIST}", "w") do |csv|
+    column_names = %w(work_id tag_id danime_title work_title)
+    column_names = %w(id  title) if columns.nil?
+    #最初の1行目にカラム設定
+    csv << column_names
+    
+    # column_valuesに代入するカラム値を定義します。
+    works.each do |work|
+      danimes = where_like_from_model(Danime, "title", work.title)
+      danimes.each do |danime|
+        column_values = [
+          work.id,
+          danime&.tag_id,
+          danime&.title,
+          work.title,
+        ]
+        # csv << column_valueshは表の行に入る値を定義します。
+        csv << column_values
+        
+      end
+    end
+  end
+end
+
 private
 
 #シーズンの追加
@@ -287,83 +347,48 @@ def add_work_data
   end
 end
 
+#アニメと声優のデータを紐付ける
+def add_workcasts_data(work, cast, count)
+  if !cast.nil?
+    Workcast.find_or_create_by(
+      work_id: work.id,
+      cast_id: cast.id
+    )
+  end
+  puts "デバッグ#{count}/id:#{work.id}:#{cast.id}:title:#{work.title}:work_title:#{cast.work_title}:CV#{cast.name}"
+  count += 1
+end
+
 #アニメとタグのデータを紐付ける
-def add_worktags_data
-  works = Work.all
+def add_worktags_data(work, danime)    
+  if !danime.nil?
+    Worktag.find_or_create_by(
+    work_id: work.id,
+    tag_id:  danime.tag_id,
+    )
+  end
+  puts "デバッグ#{count}/id:#{work.id}:#{danime.tag_id}:title:#{work.title}:work_title:#{danime.title}"
+  count += 1
+end
+
+#workテーブルと各関連モデルを紐付けデータを追加する
+def add_work_relation_model(parent_model, child_model, fields, model_name)
   count = 1
-  work_list = Hash.new
-  works.each do |work|
-    danimes = where_array_from_model(Danime, "title" ,work.title)
-    danimes.each do |danime|
-      if !danime.nil?
-        Worktag.find_or_create_by(
-        work_id: work.id,
-        tag_id:  danime.tag_id,
-        )
-      else
-        work_list.merge!(work.title => danime&.id)
-        puts "tag_count#{count}：作品名：#{work.title}"
-        count += 1
-      end
-    end
-  end
-  puts "ループ終了:NULL=#{work_list.size}"
-end
-
-#NULLデータ一覧をcsvファイルへ出力する
-def create_csv_data(columns = nil)
-  works = Work.all
-  csv_data = CSV.open("db/data/csv/#{CSV_FILE_WORKS_LIST}", "w") do |csv|
-    column_names = %w(work_id tag_id danime_title work_title)
-    column_names = %w(id  title) if columns.nil?
-    #最初の1行目にカラム設定
-    csv << column_names
-    
-    # column_valuesに代入するカラム値を定義します。
-    works.each do |work|
-      danimes = where_array_from_model(Danme, "title", work.title)
-      danimes.each do |danime|
-        column_values = [
-          work.id,
-          danime&.tag_id,
-          danime&.title,
-          work.title,
-        ]
-        # csv << column_valueshは表の行に入る値を定義します。
-        csv << column_values
-        
+  models = parent_model.all
+  models.each do |parent|
+    child_data = child_model.where(work_title: parent.title)
+    child_data.each do |child|
+      
+      case model_name.name
+      when "Worktag" then
+        add_worktags_data(parent, child)
+      when "Workcast" then
+        add_workcasts_data(parent, child, count)
       end
     end
   end
 end
 
-def create_csv_not_null_data(columns = nil)
-  works = Work.all
-  csv_data = CSV.open("db/data/csv/#{CSV_FILE_NOT_NULL_LIST}", "w") do |csv|
-    column_names = %w(work_id tag_id danime_title work_title)
-    column_names = %w(id  title) if columns.nil?
-    #最初の1行目にカラム設定
-    csv << column_names
-    
-    # column_valuesに代入するカラム値を定義します。
-    works.each do |work|
-      danime = Danime.find_by(title: "#{work.title}")
-      if danime.nil?
-        column_values = [
-          work.id,
-          # danime&.tag_id,
-          # danime&.title,
-          work.title,
-        ]
-        # csv << column_valueshは表の行に入る値を定義します。
-        csv << column_values
-      end
-
-    end
-  end
-end
-
-#csvファイルからデータを取得してくる
 def add_danime_data(tags = "tags")
   count = 1
   if tags == "tags"
@@ -390,7 +415,8 @@ def add_danime_data(tags = "tags")
   end
 end
 
-# common_add_model_data("organizations")
-# create_csv_data("NOT_NULL")
-# create_csv_not_null_data("NUL_NULL")
-add_worktags_data
+# common_add_model_data("casts")
+
+add_work_relation_model(Work, Cast, "work_title", Workcast)
+# add_work_relation_model(Work, Danime, "title", Worktag)
+# common_write_csv_file_model_data(Work, Cast, CSV_FILE_WORKS_CAST_LIST, "NOT_NULL")
