@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_08_013819) do
+ActiveRecord::Schema.define(version: 2021_02_08_024610) do
 
   create_table "casts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "character_id", null: false
@@ -88,6 +88,16 @@ ActiveRecord::Schema.define(version: 2021_02_08_013819) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "user_profiles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "nick_name", default: "ゲストユーザー"
+    t.string "image", default: ""
+    t.text "string"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_user_profiles_on_user_id"
+  end
+
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name"
     t.string "email", null: false
@@ -148,6 +158,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_013819) do
   add_foreign_key "characters", "works", name: "characters_ibfk_6", on_delete: :cascade
   add_foreign_key "danimes", "tags"
   add_foreign_key "staffs", "works"
+  add_foreign_key "user_profiles", "users"
   add_foreign_key "workcasts", "casts"
   add_foreign_key "workcasts", "works"
   add_foreign_key "worktags", "tags"
