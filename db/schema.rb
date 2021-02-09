@@ -92,7 +92,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_024610) do
     t.bigint "user_id", null: false
     t.string "nick_name", default: "ゲストユーザー"
     t.string "image", default: ""
-    t.text "string"
+    t.string "word"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_user_profiles_on_user_id"
