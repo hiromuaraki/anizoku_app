@@ -1,0 +1,23 @@
+<div class="container">
+    <% if @user.errors.any? %>
+      <div class="alert alert-danger" role="alert">
+        <ul style="list-style: none; text-align: center">
+          <% @user.errors.full_messages.each do |message| %>
+            <li>
+              <%= message %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  <div class="mx-auto" style="width: 600px; margin-top: 200px">
+    <h1 style="text-align: center">入部登録フォーム🎉</h1>
+    <%= form_with model: User ,local: false do |f|%>
+      <%= f.label :email, "Email" %>
+      <%= f.text_field :email, class: "form-control", placeholder: "example@gmail.com"%>
+      <%= f.label :password, "Password" %>
+      <%= f.password_field :password, class: "form-control", placeholder: "passwordは12桁の英数字で入力しください"%>
+      <div style="margin-top: 30px"><%= f.submit "入部する", class: ["btn btn-outline-primary", "form-control"], data: {confirm: "入力内容はお間違いないですか？"} %></div>
+    <% end %>
+  </div>
+</div>

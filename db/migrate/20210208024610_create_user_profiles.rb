@@ -4,7 +4,7 @@ class CreateUserProfiles < ActiveRecord::Migration[6.0]
       t.references :user, null: false, foreign_key: true
       t.string :nick_name ,default: "ゲストユーザー"
       t.string :image, default: ""
-      t.text :string
+      t.string :word
 
       t.timestamps
     end

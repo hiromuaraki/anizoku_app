@@ -1,8 +1,14 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  root 'static_pages#join_anizoku'
+  
+  namespace :static_pages do
+    get :home
+    get :privacy
+  end
+  
   get '/admin', to: 'admin#index'
   namespace :admin do
-    resources :posts
+    resources :posts, except: :destroy
   end
-
+  resources :users, only: [:new, :create]
 end
