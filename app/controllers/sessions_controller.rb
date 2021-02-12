@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+  before_action :redirect_if_already_logged_in, only: [:new, :create]
   def new
   end
 
@@ -7,7 +8,9 @@ class SessionsController < ApplicationController
     if user && user&.authenticate(params[:password])
       #ログイン済みにする
       logged_in user
-      redirect_to admin_posts_url, success: "ADMINとしてログインしました！！" if validate_admin?
+      #現在ログインしている人のトークンを保存する
+      remember(user)
+      return redirect_to admin_posts_url,success: "管理者としてログインしました！！" if validate_admin?
       redirect_to static_pages_home_path, success: "ログインしました！！"
     else
       return render "new"
