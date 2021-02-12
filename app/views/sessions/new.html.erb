@@ -1,0 +1,11 @@
+<div class="container">
+  <div class="mx-auto" style="width: 600px; margin-top: 200px">
+    <%= form_with url: login_path,local: false do |f|%>
+      <%= f.label :email, "Email" %>
+      <%= f.text_field :email, class: "form-control", placeholder: "example@gmail.com"%>
+      <%= f.label :password, "Password" %>
+      <%= f.password_field :password, class: "form-control", placeholder: "passwordは12桁の英数字で入力しください"%>
+      <div style="margin-top: 30px"><%= f.submit "ログイン", class: ["btn btn-outline-primary", "form-control"] %></div>
+    <% end %>
+  </div>
+</div>
