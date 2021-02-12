@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_08_024610) do
+ActiveRecord::Schema.define(version: 2021_02_12_031822) do
 
   create_table "casts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "character_id", null: false
@@ -102,6 +102,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_024610) do
     t.string "name", default: "ゲストユーザー"
     t.string "email", null: false
     t.string "password_digest"
+    t.string "remember_digest"
     t.boolean "admin", default: false
     t.boolean "display_mode", default: false
     t.datetime "created_at", precision: 6, null: false
