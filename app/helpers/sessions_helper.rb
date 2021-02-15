@@ -30,12 +30,12 @@ module SessionsHelper
   end
 
   def if_not_logged_in?
-    redirect_to login_path ,danger:"ログインしてください" if logged_in?
+    redirect_to login_path ,alert:"ログインしてください" if logged_in?
   end
 
   def redirect_if_already_logged_in
     if logged_in?
-      redirect_to static_pages_home_path, danger: "すでにログインしています"
+      redirect_to static_pages_home_path, notice: "すでにログインしています"
     end
   end
 
@@ -50,6 +50,17 @@ module SessionsHelper
     forget(current_user)
     session.delete(:user_id)
     current_user = nil
+  end
+
+  # アクセスしようとしたURLを覚えておく
+  def store_location
+    session[:forwarding_url] = request.original_url if request.get?
+  end
+
+  # 記憶したURL (もしくはデフォルト値) にリダイレクト
+  def redirect_back_or(default)
+    redirect_to(session[:forwarding_url] || default)
+    session.delete(:forwarding_url)
   end
   
 end

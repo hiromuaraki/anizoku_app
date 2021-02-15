@@ -8,8 +8,8 @@ Rails.application.routes.draw do
   post '/login', to:'sessions#create'
   delete 'logout', to:'sessions#destroy'
   
-  get '/admin', to: 'admin#index'
   namespace :admin do
+    get :menu
     resources :posts, except: :destroy
   end
   resources :users, only: [:new, :create]

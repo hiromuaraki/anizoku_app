@@ -1,27 +1,28 @@
 class UsersController < ApplicationController
-  before_action :logged_in?
-
+  
   def new
     @user = User.new
   end
 
   def create
     #すでに入部済みかどうかの確認
-    user = User.find_by(email: params[:user][:email].downcase)
-    if !user
-      @user = User.new(user_params)
-      #新規ユーザー情報のプロフィール情報と紐付け
+    @user = User.new(user_params)
+    #エラーが発生した場合
+    render "new" and return if @user.invalid?
+    if !User.find_by(email: params[:email]&.downcase)
       @user.build_user_profile
-      logged_in @user if @user.save!
-      redirect_to root_url, success: "ようこそ、あに族へ！！"
-    else
-      return render "new", danger: "入部に失敗しました。"
+      if @user.save
+        logged_in @user
+        redirect_to static_pages_home_path, notice: "ようこそ、あに族へ！！"
+      else
+        render :new, alert: "登録に失敗しました" and return
+      end
     end
   end
 
   private
 
   def user_params
-    params.require(:user).permit(:email, :password, :name)
+    params.permit(:email, :password, :name)
   end
 end

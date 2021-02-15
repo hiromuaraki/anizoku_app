@@ -1,18 +1,18 @@
 <div class="container">
-    <% if @user.errors.any? %>
-      <div class="alert alert-danger" role="alert">
-        <ul style="list-style: none; text-align: center">
-          <% @user.errors.full_messages.each do |message| %>
-            <li>
-              <%= message %>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
   <div class="mx-auto" style="width: 600px; margin-top: 200px">
     <h1 style="text-align: center">入部登録フォーム🎉</h1>
-    <%= form_with model: User ,local: false do |f|%>
+    <%= form_with url: users_path ,local: true do |f|%>
+      <% if @user.errors.any? %>
+        <div class="alert alert-danger" role="alert">
+          <ul style="list-style: none; text-align: center">
+            <% @user.errors.full_messages.each do |message| %>
+              <li>
+                <%= message %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
       <%= f.label :name, "Name" %>
       <%= f.text_field :name, class: "form-control", placeholder: "テスト太郎"%>
       <%= f.label :email, "Email" %>

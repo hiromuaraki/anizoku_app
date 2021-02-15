@@ -9,6 +9,7 @@ gem 'bootstrap'
 gem 'bootstrap-sass'
 gem 'jquery-rails'
 gem 'data-confirm-modal'
+gem 'rails-i18n'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.3', '>= 6.0.3.4'
 # Use mysql as the database for Active Record

@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_one :user_profile, dependent: :destroy
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }, length: { maximum: 255 }, format: { with: VALID_EMAIL_RAGEX }
+  validates :name,  presence: true
   has_secure_password
 
   #渡された文字列のハッシュ値を返す
