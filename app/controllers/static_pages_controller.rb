@@ -1,4 +1,5 @@
 class StaticPagesController < ApplicationController
+  
   def join_anizoku
   end
 

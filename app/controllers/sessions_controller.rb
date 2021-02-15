@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
   before_action :redirect_if_already_logged_in, only: [:new, :create]
+  
   def new
   end
 
@@ -10,16 +11,17 @@ class SessionsController < ApplicationController
       logged_in user
       #現在ログインしている人のトークンを保存する
       remember(user)
-      return redirect_to admin_posts_url,success: "管理者としてログインしました！！" if validate_admin?
-      redirect_to static_pages_home_path, success: "ログインしました！！"
+      return redirect_to admin_menu_url, notice: "管理者としてログインしました！！" if validate_admin?
+      flash[:notice] = "おかえりなさい〜"
+      redirect_back_or static_pages_home_path
     else
-      return render "new"
+      render :new and return
     end
   end
 
   def destroy
     log_out if logged_in?
-    redirect_to root_url
+    redirect_to login_path
   end
 
 end

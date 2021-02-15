@@ -1,6 +1,6 @@
 <div class="container">
   <div class="mx-auto" style="width: 600px; margin-top: 200px">
-    <%= form_with url: login_path,local: false do |f|%>
+    <%= form_with url: login_path,local: true do |f|%>
       <%= f.label :email, "Email" %>
       <%= f.text_field :email, class: "form-control", placeholder: "example@gmail.com"%>
       <%= f.label :password, "Password" %>
