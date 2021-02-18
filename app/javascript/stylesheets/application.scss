@@ -1,2 +1,45 @@
-// @import '~bootstrap/scss/bootstrap';
 @import '~bootstrap/scss/bootstrap';
+
+.alert {
+	text-align: center;
+}
+.alert-info {
+    background-color: #bde9ff;
+    border-color: #bde9ff;
+    color: #4c6977;
+}
+ 
+.alert-danger {
+    background-color: #f3c0c0;
+    border-color: #f3c0c0;
+    color: #3e3a3a;
+}
+
+.center {
+    text-align: center;
+}
+
+.radius-border {
+  border-radius: 20px;
+  background-color: gold;
+}
+
+.margin-top {
+  margin-top: 50px;
+}
+
+.width-change {
+  width: 50px;
+}
+
+.page-navigation{
+  padding:0.5em;
+  display:flex;
+  justify-content:center;
+}
+
+a:hover{
+  background:gold;
+  border-radius:100%;
+}
+

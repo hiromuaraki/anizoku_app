@@ -1,0 +1,38 @@
+<div style="margin: 0 auto; width: 1600px">
+<h1>アニメ一覧　<div style="text-align: right"><%= link_to "メニューへ戻る", admin_menu_path, class: "btn btn-outline-primary" %></div></h1>
+<table class="table table-striped table-bordered">
+  <thead> 
+    <tr>
+      <th scope="col">Row_no</th>
+      <th scope="col">Media</th>
+      <th scope="col">Title</th>
+      <th scope="col">Episond_count</th>
+      <th scope="col">Year</th>
+      <th scope="col">Season_id</th>
+      <th scope="col">Season</th>
+      <th scope="col">Tag_count</th>
+      <th scope="col">Work_id</th>
+      <th scope="col">Tag_ids</th>
+      <th scope="col" style="color: red">Destroy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @works.each_with_index do |work, i| %>
+      <tr>
+        <th scope="row"><%= i + 1 %></th>
+        <td class="center"><%= work.media.upcase %></td>
+        <td><h5 class="card-title"><%= link_to "#{work.title}", admin_post_path(work.id) %></h5></td>
+        <td class="center"><%= work.episodes_count %></td>
+        <td class="center"><%= work.season_year %></td>
+        <td class="center"><%= work.season_id %></td>
+        <td class="center"><%= work.season_name_text.slice(-1) %></td>
+        <td class="center"><%= @tag_ids[i].size %></td>
+        <td class="center"><%= work.id%></td>
+        <td><%= @tag_ids[i] %></td>
+        <td><strong><%= link_to "削除", "#", class: "btn btn-danger", data: {confirm: "本当に削除しますか？データは戻せません！！"}  %></strong></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+  <%= link_to paginate @works %>
+</div>
