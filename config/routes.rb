@@ -4,13 +4,14 @@ Rails.application.routes.draw do
     get :home
     get :privacy
   end
+  
   get '/login', to:'sessions#new'
   post '/login', to:'sessions#create'
   delete 'logout', to:'sessions#destroy'
   
   namespace :admin do
     get :menu
-    resources :posts, except: :destroy
+    resources :posts, except: [:destroy, :edit]
   end
   resources :users, only: [:new, :create]
 end
