@@ -1,13 +1,18 @@
 <div class="container">
   <h1 class="center radius-border">アニメタグ紐付け詳細/編集画面</h1>
     <div class="mx-auto" style="width: 1200px; margin-top: 70px">
-      <%= form_with url: admin_post_path(@work), method: :patch, local: true do |f|%>
+      <%= form_with url: admin_posts_path(@work), method: :post ,local: true do |f|%>
+        <%= f.hidden_field :url, :value => @url %>
         <div><h3><%= f.label :name, "アニメ名" %>：<%= @work.title %><h3></div>
         <h4>作品ID：<%= @work.id %>　タグID：<%= @tag_ids %>　タグ件数：<%= @tag_ids.size %>件</h4>
-        <p><%= f.submit "編集する" ,class: ["btn btn-outline-primary"], data: {confirm: "チェック内容は大丈夫ですか？"} %>　<%= link_to "一覧へ戻る", admin_posts_path, class:"btn btn-outline-primary" %></p>
-        <div class="row row-cols-4 border">
+        <p><%= f.submit "タグを紐付ける" ,class: ["btn btn-outline-primary"], data: {confirm: "チェック内容は大丈夫ですか？"} %>　<%= link_to "一覧へ戻る", admin_posts_path, class:"btn btn-outline-primary" %></p>
+        <div class="row row-cols-4">
           <% @tags.all.each_with_index do |tag, i| %>
-            <div class="col" style="font-size: 20px"><p><div><%= "タグID#{tag.id}" %>：<%= check_box_tag "tag_ids[tag][]",tag.id ,@tag_ids.include?(tag.id) ? true : false, id: "tag_ids#{i}" %></div><%= tag.name %></p></div>
+            <% if !@tag_ids.include?(tag.id)%>
+              <div class="col" style="font-size: 20px"><p><div><%= "タグID#{tag.id}" %>：<%= check_box_tag "tag_ids[tag][]", tag.id ,false, {disabled: false, id: "tag_ids#{i}" }%></div><%=tag.name %></p></div>
+            <% else %>
+              <div class="col" style="font-size: 20px"><p><div><%= "タグID#{tag.id}" %>：<%= check_box_tag "tag_ids[tag][]", tag.id ,false, {disabled: true, id:"tag_ids#{i}" }%></div><%=tag.name %></p></div>
+            <% end %>
           <% end %>
         </div>
       <% end %>

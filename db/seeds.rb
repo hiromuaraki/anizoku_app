@@ -5,10 +5,12 @@ require "uri"
 require "json"
 require "csv"
 
+CSV_FILE_TAG = "タグデータ.csv"
 CSV_FILE_NULL_LIST = "worksにないデータ一覧.csv"
 CSV_FILE_NOT_NULL_LIST = "worksにあるデータ一覧.csv"
 CSV_FILE_WORKS_LIST = "追加するリスト.csv"
 CSV_FILE_WORKS_CAST_LIST = "追加データ一覧.csv"
+CSV_FILE_WORK_TAG_LIST = "worktagリスト.csv"
 
 CSV_FILE_SF = "SF_ファンタジー.csv"
 CSV_FILE_ROBOT_MEKA = "ロボット_メカ.csv"
@@ -57,12 +59,11 @@ CSV_FILE_TUTO_RIAL = "アニメ入門.csv"
 CSV_FILE_DIFFERENT_RELIFE = "異世界転生.csv"
 CSV_FILE_DIFFERENT_WORLD = "異世界.csv"
 CSV_FILE_SUPER_MOEMOE = "超超萌え萌え.csv"
+CSV_FILE_EVERY_ONE_RECOMEND = "みんなのおすすめ.csv"
+CSV_FILE_HAREM = "ハーレム.csv"
 
-
-CSV_FILE_TAG = "タグデータ.csv"
 # YEAR_LIST = 1900..(Time.now.year)
 # YEAR = YEAR_LIST.to_a.reverse!
-SEASON = {winter: "冬", spring: "春", summer: "夏", autumn: "秋"}
 NEXT_PAGE_NO = 24
 
 #mainメソッド
@@ -78,14 +79,14 @@ def first_requst(req_name)
 end
 
 #API実行｜jsonデータを配列へ変換し返す
-def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=1987-autumn\&page=1")
+def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=1980-autumn\&page=1")
   req_url = URI.parse(url)
   json = Net::HTTP.get(req_url)
   response = JSON.parse(json)
 end
 
 #ページ数を動的に変更する
-def get_change_req_url(table="work", page = 1)
+def get_change_req_url(table="works", page = 1)
   req_url = "https://api.annict.com/v1/#{table}?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM&page=#{page.to_i}"
 end
 
@@ -157,26 +158,27 @@ def where_like_from_model(model_name, fields, conditions)
 end
 
 #csvファイルへ書き出す（追記モード）
-def common_write_csv_file_model_data(parent_model, child_model, csv_file_path, mode=nil)
+def common_write_csv_file_model_data(parent_model, child_model, csv_file_path, mode="worktag")
   parent_data = parent_model.all
   csv_data = CSV.open("db/data/csv/#{csv_file_path}", "w") do |csv|
-    column_names = %w(work_id cast_id work_title cast_title cast_name)
+    column_names = %w(work_id work_title danime_title tag_id tag_name) if mode =="worktag"
+    column_names = %w(work_id cast_id work_title cast_title cast_name) if mode =="workcast"
     column_names = %w(id  title) if mode.nil?
     #最初の1行目にカラム設定
     csv << column_names
     
     # column_valuesに代入するカラム値を定義します。
     parent_data.each do |parent|
-      child_data = child_model.where(work_title: parent.title)
+      child_data = child_model.where(title: parent.title)
       child_data.each do |child|
-        
+        tag = Tag.find_by(id: child.tag_id)
         if !child.nil?
           column_values = [
             parent.id,
-            child.id,
             parent.title,
-            child.work_title,
-            child.name
+            child.title,
+            child.tag_id,
+            tag.name,
           ]
           # csv << column_valueshは表の行に入る値を定義します。
           csv << column_values
@@ -215,15 +217,6 @@ def create_csv_data(columns = nil)
 end
 
 private
-
-#シーズンの追加
-def add_season_data
-  begin
-    Season.find_or_create_by(name: SEASON[:autumn])
-  rescue => e
-    error_msg(e)
-  end
-end
 
 #シリーズの追加
 def add_series_data(series)
@@ -317,12 +310,9 @@ end
 def add_work_data
   table_name = "works"
   response = request_api
-  
   response[table_name].each do |work|
     begin
-      season = Season.find_by(name: SEASON[:autumn])
       Work.find_or_create_by(
-        season_id: season.id,
         season_name: work["season_name"],
         season_name_text: work["season_name_text"],
         season_year: work["season_name"],
@@ -343,7 +333,6 @@ def add_work_data
     rescue ActiveRecord::RecordNotUnique
       retry
     end
-
   end
 end
 
@@ -360,48 +349,48 @@ def add_workcasts_data(work, cast, count)
 end
 
 #アニメとタグのデータを紐付ける
-def add_worktags_data(work, danime)    
-  if !danime.nil?
-    Worktag.find_or_create_by(
+def add_worktags_data(work, danime, tag_ids)
+  tag_ids << danime.tag_id
+  Worktag.create!(
     work_id: work.id,
     tag_id:  danime.tag_id,
-    )
-  end
-  puts "デバッグ#{count}/id:#{work.id}:#{danime.tag_id}:title:#{work.title}:work_title:#{danime.title}"
-  count += 1
+    tag_checked: false
+  )
+  puts "work_id :#{work.id} :work_title :#{work.title} :danime_title :#{danime.title} :tag_ids :#{tag_ids}"
 end
 
-#workテーブルと各関連モデルを紐付けデータを追加する
+#workテーブルと各関連モデルを紐付け、データを追加する
 def add_work_relation_model(parent_model, child_model, fields, model_name)
-  count = 1
-  models = parent_model.all
-  models.each do |parent|
-    child_data = child_model.where(work_title: parent.title)
-    child_data.each do |child|
+  parent_model.all.each do |parent|
+    tag_ids = []
+    child_model.where(title: parent.title).each do |child|
       
       case model_name.name
       when "Worktag" then
-        add_worktags_data(parent, child)
+        add_worktags_data(parent, child, tag_ids)
       when "Workcast" then
-        add_workcasts_data(parent, child, count)
+        add_workcasts_data(parent, child)
       end
     end
   end
 end
 
-def add_danime_data(tags = "tags")
+
+def open_csv_model_create(tags = "tags")
   count = 1
+  #タグデータ新規追加
   if tags == "tags"
     CSV.foreach("db/data/csv/#{CSV_FILE_TAG}", headers: true) do |row|
+      #すでに存在する場合は作成しない
       Tag.find_or_create_by(name: row["title"])
       puts "デバッグ#{count}/タグ名：#{row["title"]}"
       count += 1
     end
   else
     begin
-      tag = Tag.find_by(name: "超超萌え萌え")
+      tag = Tag.find_by(name: "")
       #先頭のヘッダーをスキップする
-      CSV.foreach("db/data/csv/#{CSV_FILE_SUPER_MOEMOE}", headers: true) do |row|
+      CSV.foreach("db/data/csv/#{}", headers: true) do |row|
         Danime.find_or_create_by(
           tag_id: tag.id,
           title:  row["title"],
@@ -415,8 +404,11 @@ def add_danime_data(tags = "tags")
   end
 end
 
-# common_add_model_data("casts")
-
-add_work_relation_model(Work, Cast, "work_title", Workcast)
+# add_work_data
+# common_add_model_data("")
+# open_csv_model_create("danime")
+# open_csv_model_create
+# add_work_relation_model(Work, Cast, "work_title", Workcast)
 # add_work_relation_model(Work, Danime, "title", Worktag)
 # common_write_csv_file_model_data(Work, Cast, CSV_FILE_WORKS_CAST_LIST, "NOT_NULL")
+# common_write_csv_file_model_data(Work, Danime, CSV_FILE_WORK_TAG_LIST, "worktag")

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_12_031822) do
+ActiveRecord::Schema.define(version: 2021_02_20_142538) do
 
   create_table "casts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "character_id", null: false
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2021_02_12_031822) do
   end
 
   create_table "characters", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
-    t.bigint "work_id"
+    t.bigint "work_id", default: 0, null: false
     t.string "name"
     t.string "nick_name"
     t.string "birthday"
@@ -56,12 +56,6 @@ ActiveRecord::Schema.define(version: 2021_02_12_031822) do
     t.text "url"
     t.text "wikipedia_url"
     t.string "twitter_name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
-  create_table "seasons", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
-    t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -120,7 +114,6 @@ ActiveRecord::Schema.define(version: 2021_02_12_031822) do
   end
 
   create_table "works", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
-    t.bigint "season_id", null: false
     t.string "season_name"
     t.string "season_name_text"
     t.integer "season_year", null: false
@@ -135,15 +128,15 @@ ActiveRecord::Schema.define(version: 2021_02_12_031822) do
     t.string "twitter_image_url", default: "", null: false
     t.string "twitter_username"
     t.string "recommended_image_url", default: "", null: false
-    t.string "wikipedia_url", limit: 500
+    t.text "wikipedia_url", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["season_id"], name: "index_works_on_season_id"
   end
 
   create_table "worktags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "work_id", null: false
     t.bigint "tag_id", null: false
+    t.boolean "tag_checked", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["tag_id"], name: "index_worktags_on_tag_id"
@@ -153,10 +146,6 @@ ActiveRecord::Schema.define(version: 2021_02_12_031822) do
 
   add_foreign_key "casts", "characters"
   add_foreign_key "characters", "works"
-  add_foreign_key "characters", "works", name: "characters_ibfk_3", on_delete: :cascade
-  add_foreign_key "characters", "works", name: "characters_ibfk_4", on_delete: :cascade
-  add_foreign_key "characters", "works", name: "characters_ibfk_5", on_delete: :cascade
-  add_foreign_key "characters", "works", name: "characters_ibfk_6", on_delete: :cascade
   add_foreign_key "danimes", "tags"
   add_foreign_key "staffs", "works"
   add_foreign_key "user_profiles", "users"

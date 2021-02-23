@@ -1,14 +1,16 @@
+
 class Admin::PostsController < AdminController
 
   def menu
   end
 
   def index
-    @works   = Work.includes(:worktags).page(params[:page]).order(season_year: :desc, season_id: :asc)
+    @works   = Work.includes(:worktags).page(params[:page]).order(id: :asc, season_year: :desc)
     tag_ids @works, "index"
   end
 
   def show
+    @url = request.headers[:referer]
     @work = Work.find(params[:id])
     tag_ids @work, "show"
     @tags = Tag.all
@@ -17,12 +19,18 @@ class Admin::PostsController < AdminController
   def new
   end
 
-  #アニメに紐付いているtag_idを一括更新する
-  def update
-    params[:tag_ids].each do |tag_ids|
-      next if tag_ids.include?("tag")
-      # Worktag.where(work_id: params[:id]).update_all(tag_id: params[:tag_ids])
+  def create
+    params[:tag_ids][:tag].each do |tag_id|
+      Worktag.create!(
+        work_id: params[:format],
+        tag_id: tag_id,
+        tag_checked: true
+      )
     end
+    redirect_to params[:url]
+  end
+
+  def update
   end
 
   private
