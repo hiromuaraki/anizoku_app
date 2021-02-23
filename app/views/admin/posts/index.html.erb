@@ -8,12 +8,11 @@
       <th scope="col">Title</th>
       <th scope="col">Episond_count</th>
       <th scope="col">Year</th>
-      <th scope="col">Season_id</th>
       <th scope="col">Season</th>
       <th scope="col">Tag_count</th>
       <th scope="col">Work_id</th>
       <th scope="col">Tag_ids</th>
-      <th scope="col" style="color: red">Destroy</th>
+      <th scope="col">Show_view</th>
     </tr>
   </thead>
   <tbody>
@@ -21,15 +20,14 @@
       <tr>
         <th scope="row"><%= i + 1 %></th>
         <td class="center"><%= work.media.upcase %></td>
-        <td><h5 class="card-title"><%= link_to "#{work.title}", admin_post_path(work.id) %></h5></td>
+        <td><h5 class="card-title"><%= link_to "#{work.title}", work.wikipedia_url, target: :_blank %></h5></td>
         <td class="center"><%= work.episodes_count %></td>
         <td class="center"><%= work.season_year %></td>
-        <td class="center"><%= work.season_id %></td>
         <td class="center"><%= work.season_name_text.slice(-1) %></td>
         <td class="center"><%= @tag_ids[i].size %></td>
         <td class="center"><%= work.id%></td>
         <td><%= @tag_ids[i] %></td>
-        <td><strong><%= link_to "削除", "#", class: "btn btn-danger", data: {confirm: "本当に削除しますか？データは戻せません！！"}  %></strong></td>
+        <td><strong><%= link_to "詳細", admin_post_path(work.id), class: "btn btn-primary" %></strong></td>
       </tr>
     <% end %>
   </tbody>
