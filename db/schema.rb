@@ -61,9 +61,11 @@ ActiveRecord::Schema.define(version: 2021_02_20_142538) do
   end
 
   create_table "series", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "work_id", null: false
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["work_id"], name: "index_series_on_work_id"
   end
 
   create_table "staffs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -147,6 +149,7 @@ ActiveRecord::Schema.define(version: 2021_02_20_142538) do
   add_foreign_key "casts", "characters"
   add_foreign_key "characters", "works"
   add_foreign_key "danimes", "tags"
+  add_foreign_key "series", "works"
   add_foreign_key "staffs", "works"
   add_foreign_key "user_profiles", "users"
   add_foreign_key "workcasts", "casts"

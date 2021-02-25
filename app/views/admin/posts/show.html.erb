@@ -11,7 +11,7 @@
             <% if !@tag_ids.include?(tag.id)%>
               <div class="col" style="font-size: 20px"><p><div><%= "タグID#{tag.id}" %>：<%= check_box_tag "tag_ids[tag][]", tag.id ,false, {disabled: false, id: "tag_ids#{i}" }%></div><%=tag.name %></p></div>
             <% else %>
-              <div class="col" style="font-size: 20px"><p><div><%= "タグID#{tag.id}" %>：<%= check_box_tag "tag_ids[tag][]", tag.id ,false, {disabled: true, id:"tag_ids#{i}" }%></div><%=tag.name %></p></div>
+              <div class="col" style="font-size: 20px;"><p><div><%= "タグID#{tag.id}" %>：<%= check_box_tag "tag_ids[tag][]", tag.id ,false, {disabled: true, id:"tag_ids#{i}" }%></div><%=tag.name %></p></div>
             <% end %>
           <% end %>
         </div>

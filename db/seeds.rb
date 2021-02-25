@@ -11,6 +11,8 @@ CSV_FILE_NOT_NULL_LIST = "worksにあるデータ一覧.csv"
 CSV_FILE_WORKS_LIST = "追加するリスト.csv"
 CSV_FILE_WORKS_CAST_LIST = "追加データ一覧.csv"
 CSV_FILE_WORK_TAG_LIST = "worktagリスト.csv"
+CSV_FILE_WORK_TAG_LIST_DESTROY_BEFORE_LIST = "worktag削除前リスト.csv"
+CSV_FILE_WORK_SERIES_LIST = "workの検索結果がnilのデータ.csv"
 
 CSV_FILE_SF = "SF_ファンタジー.csv"
 CSV_FILE_ROBOT_MEKA = "ロボット_メカ.csv"
@@ -78,17 +80,18 @@ def first_requst(req_name)
   response = request_api(req_url)
 end
 
+#ページ数を動的に変更する
+def get_change_req_url(table="works", page = 1)
+  req_url = "https://api.annict.com/v1/#{table}?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM&page=#{page.to_i}"
+end
+
 #API実行｜jsonデータを配列へ変換し返す
-def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=1980-autumn\&page=1")
+def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=2018-spring\&page=6")
   req_url = URI.parse(url)
   json = Net::HTTP.get(req_url)
   response = JSON.parse(json)
 end
 
-#ページ数を動的に変更する
-def get_change_req_url(table="works", page = 1)
-  req_url = "https://api.annict.com/v1/#{table}?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM&page=#{page.to_i}"
-end
 
 #次のページをリクエストする
 def get_next_page(page_no, table_name)
@@ -117,6 +120,7 @@ end
 def response_not_nil?(response, req_name)
   page_no = 1
   count   = 0
+  null_list = []
   while !response["next_page"].nil?
     response[req_name].each_with_index do |data, index|
       #各モデルを追加する
@@ -130,7 +134,7 @@ def response_not_nil?(response, req_name)
       when "staffs" then
         add_staffs_data(data)
       when "series" then
-        add_series_data(data)
+        add_series_data(data, null_list)
       when "works"  then
         add_work_data
       end
@@ -216,16 +220,74 @@ def create_csv_data(columns = nil)
   end
 end
 
+#データ一覧をcsvファイルへ出力する
+def create_csv_data(model, columns = nil)
+  worktags = model.all
+  csv_data = CSV.open("db/data/csv/#{CSV_FILE_WORK_SERIES_LIST}", "w") do |csv|
+    column_names = %w(id work_id tag_id)
+    column_names = %w(id  title) if columns.nil?
+    #最初の1行目にカラム設定
+    csv << column_names
+    
+    #column_valuesに代入するカラム値を定義します。
+    worktags.each do |work|
+      column_values = [
+        work.id,
+        work.work_id,
+        work.tag_id,
+        work.tag_checked,
+      ]
+      # csv << column_valueshは表の行に入る値を定義します。
+      csv << column_values
+    end
+  end
+end
+
+#モデルにないデータを書き出す
+def create_csv_not_null_list(list_item, columns=nil)
+  csv_data = CSV.open("db/data/csv/#{CSV_FILE_WORK_SERIES_LIST}", "w") do |csv|
+    column_names = %w(item_no item)
+    column_names = %w(id  title) if columns.nil?
+    #最初の1行目にカラム設定
+    csv << column_names
+  
+    list_item.each_with_index do |item, i|
+      column_values = [
+        i+1,
+        item,
+      ]
+      # csv << column_valueshは表の行に入る値を定義します。
+      csv << column_values
+    end
+  end
+end
+
 private
 
-#シリーズの追加
-def add_series_data(series)
+#workIDの存在をチェックし保存を実行する
+def add_series_data(series, null_list)
   begin
-    Series.find_or_create_by(name: series["name"])
-    puts "シリーズ名：#{series["name"]}"
+    works = Work.where("title like?", "%#{series["name"]}%")
+    if works.size >= 1
+      works.each do |work|
+        create_series(work, series)
+      end
+    else
+      null_list << series["name"]
+      create_csv_not_null_list(null_list, "series")
+    end
   rescue => e
     error_msg(e)
   end
+end
+
+#シリーズのデータを作成する
+def create_series(work, series)
+  Series.find_or_create_by(
+    work_id: work.id,
+    name: series["name"]
+  )
+  puts "シリーズ名：#{series["name"]}"
 end
 
 #キャラクターの追加
@@ -351,7 +413,7 @@ end
 #アニメとタグのデータを紐付ける
 def add_worktags_data(work, danime, tag_ids)
   tag_ids << danime.tag_id
-  Worktag.create!(
+  Worktag.find_or_create_by(
     work_id: work.id,
     tag_id:  danime.tag_id,
     tag_checked: false
@@ -405,10 +467,11 @@ def open_csv_model_create(tags = "tags")
 end
 
 # add_work_data
-# common_add_model_data("")
+common_add_model_data("series")
 # open_csv_model_create("danime")
 # open_csv_model_create
 # add_work_relation_model(Work, Cast, "work_title", Workcast)
 # add_work_relation_model(Work, Danime, "title", Worktag)
 # common_write_csv_file_model_data(Work, Cast, CSV_FILE_WORKS_CAST_LIST, "NOT_NULL")
-# common_write_csv_file_model_data(Work, Danime, CSV_FILE_WORK_TAG_LIST, "worktag")
+# common_write_csv_file_model_data(Work, Danime, CSV_FILE_WORK_TAG_LIST_DESTROY_BEFORE_LIST, "worktag")
+# create_csv_data(Worktag,"worktag")
