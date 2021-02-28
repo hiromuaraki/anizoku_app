@@ -1,4 +1,3 @@
-
 class Admin::PostsController < AdminController
 
   def menu

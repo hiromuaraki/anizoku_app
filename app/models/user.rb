@@ -1,14 +1,17 @@
 class User < ApplicationRecord
   #ユーザーのトークンを一時的に保存する
   attr_accessor :remember_token
+  enum display_mode: { normal: 0, otaku: 1 }
 
   VALID_EMAIL_RAGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   has_one :user_profile, dependent: :destroy
+  #user_profileに直接アクセスできるようにする
+  delegate :user_id, :nick_name, :image, :word, to: :user_profile
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }, length: { maximum: 255 }, format: { with: VALID_EMAIL_RAGEX }
   validates :name,  presence: true
   has_secure_password
-
+  
   #渡された文字列のハッシュ値を返す
   def digest(string)
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
