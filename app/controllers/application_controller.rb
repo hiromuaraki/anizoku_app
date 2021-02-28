@@ -1,7 +1,7 @@
-include SessionsHelper
 
 class ApplicationController < ActionController::Base
-
+  include SessionsHelper
+  
   #管理者の権限かどうか
   def validate_admin?
     current_user.admin? 
