@@ -4,6 +4,7 @@ require "net/http"
 require "uri"
 require "json"
 require "csv"
+require 'open-uri'
 
 CSV_FILE_TAG = "タグデータ.csv"
 CSV_FILE_NULL_LIST = "worksにないデータ一覧.csv"
@@ -265,6 +266,28 @@ def create_csv_null_list(list_item:, columns: nil, mode: "series")
   end
 end
 
+#WEBから画像を取得してくる
+def get_image_request_download
+  Work.all.each do |work|
+    url = work.facebook_og_image_url
+    if !url.blank?
+      #バイナリデータ形式で書き込む（画像がなっかたら新規作成）
+      open("./app/assets/images/work_#{work.id}.jpg", 'wb') do |file|
+        begin
+          open(url) do |image|
+            puts "ID：#{work.id} /タイトル：#{work.title} /URL：#{url}"
+            file.write(image.read)
+          end
+        rescue => e
+          error_msg(e)
+          next
+        end
+        
+      end
+    end 
+  end
+end
+
 private
 
 #workIDの存在をチェックし保存を実行する
@@ -483,3 +506,4 @@ end
 # common_write_csv_file_model_data(parent_model: Work, child_model: Cast,  csv_file_path: CSV_FILE_WORKS_CAST_LIST, mode: "NOT_NULL")
 # common_write_csv_file_model_data(parent_model: Work, child_model: Danime,csv_file_path: CSV_FILE_WORK_TAG_LIST_DESTROY_BEFORE_LIST, mode: "worktag")
 # create_csv_data(model: Worktag, columns: "worktag")
+get_image_request_download
