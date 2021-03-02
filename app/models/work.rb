@@ -3,10 +3,14 @@ class Work < ApplicationRecord
   has_many :worktags, dependent: :destroy
   has_many :tags, through: :worktags
 
+  
   #アニメと声優情報を紐付ける
   has_many :workcasts, dependent: :destroy
   has_many :casts, through: :workcasts
   has_many :characters, dependent: :destroy
   has_many :series,     dependent: :destroy
   has_many :staffs,     dependent: :destroy
+  
+  scope :where_array, ->(work_id) { where(id: work_id) }
+  
 end

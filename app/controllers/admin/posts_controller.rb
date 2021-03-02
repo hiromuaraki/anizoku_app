@@ -20,7 +20,7 @@ class Admin::PostsController < AdminController
 
   def create
     params[:tag_ids][:tag].each do |tag_id|
-      Worktag.create!(
+      Worktag.find_or_create_by(
         work_id: params[:format],
         tag_id: tag_id,
         tag_checked: true
@@ -39,10 +39,10 @@ class Admin::PostsController < AdminController
     @tag_ids = []
     if method_name == "index"
       works.each do |work|
-        @tag_ids << Worktag.tag_ids(work.id)
+        @tag_ids << Worktag.worktags_ids(true, work.id)
       end
     else
-        @tag_ids = Worktag.tag_ids(works.id)
+        @tag_ids = Worktag.worktags_ids(true, works.id)
     end
   end
 
