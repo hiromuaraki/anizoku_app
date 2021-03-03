@@ -1,5 +1,10 @@
 @import '~bootstrap/scss/bootstrap';
 
+// <%# モードによって制御するように変更する %>
+body {
+  background-color: #181818;
+}
+
 .alert {
 	text-align: center;
 }
@@ -39,7 +44,31 @@
 }
 
 a:hover{
-  background:gold;
-  // border-radius:100%;
+  
 }
 
+.nav-menu {
+  a:hover {
+    background: white;
+    border-radius:10%;
+    font-weight: bold;
+    }
+    height: 70px;
+    margin-top: 30px;
+    opacity: 0.5;
+    font-size: 20px;
+}
+
+.border-menu {
+  a:hover {
+    background-color: gold;
+    border-radius: 0px;
+  }
+  border-left: solid;
+  border-color: lightgreen;
+}
+
+// .border-header {
+//   border-left: solid;
+//   border-color: #FFFF;
+// }
