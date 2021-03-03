@@ -4,7 +4,6 @@ class Worktag < ApplicationRecord
   belongs_to :tag
 
   YEAR_LIST = 2020..(Time.now.year)
-  #管理人のおすすめ
 
   #後から共通化する
   scope :worktags_ids, ->(tag, work_id) do
