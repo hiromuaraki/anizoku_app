@@ -3,7 +3,7 @@ class Worktag < ApplicationRecord
   belongs_to :work
   belongs_to :tag
 
-  #管理人のおすすめ
+  YEAR_LIST = 2020..(Time.now.year)
 
   #後から共通化する
   scope :worktags_ids, ->(tag, work_id) do
@@ -22,9 +22,9 @@ class Worktag < ApplicationRecord
     items.shuffle
   end
 
-  #現在年を取得する
+  #現在年から2010年まで年数を取得する
   def self.time_year
-    Time.now.year
+    YEAR_LIST.to_a
   end
   
 end

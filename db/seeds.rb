@@ -67,8 +67,6 @@ CSV_FILE_SUPER_MOEMOE = "超超萌え萌え.csv"
 CSV_FILE_EVERY_ONE_RECOMEND = "みんなのおすすめ.csv"
 CSV_FILE_HAREM = "ハーレム.csv"
 
-# YEAR_LIST = 1900..(Time.now.year)
-# YEAR = YEAR_LIST.to_a.reverse!
 NEXT_PAGE_NO = 24
 
 #mainメソッド
