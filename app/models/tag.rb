@@ -120,4 +120,9 @@ class Tag < ApplicationRecord
     }
   end
 
+  #タグ一覧を返す
+  def self.tag_list
+    tags = Tag.all
+  end
+
 end

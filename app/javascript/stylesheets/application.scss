@@ -2,7 +2,8 @@
 
 // <%# モードによって制御するように変更する %>
 body {
-  background-color: #181818;
+  // background-color: #181818;
+  background-color: #130B06;
 }
 
 .alert {
@@ -30,7 +31,7 @@ body {
 }
 
 .margin-top {
-  margin-top: 50px;
+  margin-top: 70px;
 }
 
 .width-change {
@@ -43,16 +44,11 @@ body {
   justify-content:center;
 }
 
-a:hover{  
-}
-
 .nav-menu {
   a:hover {
-    background: white;
-    border-radius:10%;
     font-weight: bold;
     }
-    height: 70px;
+    height: 50px;
     margin-top: 30px;
     opacity: 0.5;
     font-size: 20px;
@@ -60,14 +56,103 @@ a:hover{
 
 .border-menu {
   a:hover {
-    background-color: gold;
-    border-radius: 0px;
+    background-color: slategrey;
+    opacity: 0.3;
   }
-  border-left: solid;
+  border-left: solid 5px;
   border-color: lightgreen;
 }
 
-// .border-header {
-//   border-left: solid;
-//   border-color: #FFFF;
+.cut {
+	position: relative;
+	overflow: hidden;	/*不要部分の切り取り*/
+	height: 180px;		/*正方形にしたい高さサイズ*/
+	width: 313px;		/*正方形にしたい横幅サイズ*/
+	display: block;		/*spanなのでblock要素にする*/
+	margin:0 10px 10px 0;
+}
+.cut_image {			/*縦・横の画像でも一応見れるように微妙に調整されています。*/
+	display: block;
+	height: 150px;
+	position: absolute;
+	left: -50px;
+	top: -20px;
+}
+
+.list-group {
+  height: 70px;
+  padding: 20px 20px 10px 0px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #E60914;
+  background-color: #FFFFFF;
+  margin: 0.3em 0px;
+  border: outset;
+  box-shadow: 2px 2px;
+
+}
+
+span a:hover {
+  text-decoration: none;
+}
+
+i {
+  opacity: 0.5;
+}
+
+/* 全体のスタイル */
+// .swiper-container {
+	// width: 930px;
+	// height: 460px;
 // }
+// /* 全スライド共通スタイル */
+// .swiper-slide {
+	// width: 256px;
+	// height: 180px;
+	// line-height: 125px;
+// }
+/* 4の倍数＋1枚目のスライドのスタイル（1枚目、5枚目…） */
+
+// .swiper-container {
+  // width: 930px;
+  // height: 500px;
+  // margin-left: auto;
+  // margin-right: auto;
+// }
+// 
+// .swiper-slide {
+  // text-align: center;
+  // font-size: 18px;
+  // background: #fff;
+  // height: calc((100% - 30px) / 1);
+// 
+  // /* Center slide text vertically */
+  // display: -webkit-box;
+  // display: -ms-flexbox;
+  // display: -webkit-flex;
+  // display: flex;
+  // -webkit-box-pack: center;
+  // -ms-flex-pack: center;
+  // -webkit-justify-content: center;
+  // justify-content: center;
+  // -webkit-box-align: center;
+  // -ms-flex-align: center;
+  // -webkit-align-items: center;
+  // align-items: center;
+// }
+// 
+/* 全体のスタイル */
+.swiper-container {
+	width: 100%;
+	height: 250px;
+}
+/* 全スライド共通スタイル */
+.swiper-slide {
+	color: #ffffff;
+	width: 100%;
+	height: 125px;
+	text-align: center;
+	line-height: 125px;
+}
+
+

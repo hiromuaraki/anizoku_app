@@ -1,4 +1,6 @@
-<div class="container" style="width: 1000px">
+<div class="container" style="width: 960px">
+  <%# アラート %>
+  <%= render 'layouts/alert' %>
   <%# ヘッダー%>
   <%= render "/shared/header" %>
   <%# スライダー %>
@@ -7,5 +9,8 @@
   <%= render "/shared/navbar" %>
   <%# コンテンツ %>
   <%= render "/shared/contents" %>
+  <%= javascript_pack_tag "home/slider" %>
+  <%# タグ一覧 %>
+  <%= render "/shared/tags" %>
 </div>
 

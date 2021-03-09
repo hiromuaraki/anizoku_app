@@ -3,14 +3,14 @@
     <div class="carousel-item active">
       <% @works.first(1).each do |work| %>
         <% if !work.facebook_og_image_url.blank? %>
-          <%= image_tag work.facebook_og_image_url, size: "1000x550", alt: "#{work.title}" %>
+          <%= image_tag work.facebook_og_image_url, size: "1000x350", alt: "#{work.title}", class: "img-thumbnail" %>
         <% end %>
       <% end %>
     </div>
     <% @works.drop(1).each do |work|%>
       <% if !work.facebook_og_image_url.blank? %>
       <div class="carousel-item">
-        <%= image_tag work.facebook_og_image_url, size: "1000x550", alt: "#{work.title}" %>
+        <%= image_tag work.facebook_og_image_url, size: "1000x350", alt: "#{work.title}", class: "img-thumbnail" %>
       </div>
       <% end %>
     <% end %>
