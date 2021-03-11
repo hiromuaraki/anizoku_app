@@ -1,0 +1,17 @@
+<% if @display_mode == "1" %>
+<%# header %>
+  $('#display_mode').html("<%= escape_javascript(render 'search') %>");
+  $('.custom-control-label').html("オタク");
+  $('#display_mode').show();
+<%# nav-bar menu %>
+  $('.display_mode-nav').html("<%= escape_javascript(render 'nav-bar') %>");
+  $('.display_mode-nav').show();
+<% else  %>
+<%# header %>
+  $('#display_mode').hide();
+  $('.custom-control-label').html("ノーマル");
+
+<%# nav-bar menu %>
+  $('.display_mode-nav').html("<%= escape_javascript(render 'nav-bar-normal') %> ");
+  $('.display_mode-nav').show();
+<% end %>
