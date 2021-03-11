@@ -1,28 +1,59 @@
 @import '~bootstrap/scss/bootstrap';
 
 // <%# モードによって制御するように変更する %>
+:root {
+  --color-background: #f9f9f9;
+  --color-default: #000;
+  --color-accent-1: deepskyblue;
+  --color-accent-2: violet;
+  --color-text: #000000;
+}
+
+// ノーマル時
 body {
-  // background-color: #181818;
-  background-color: #130B06;
+  background-color: var(--color-background);
+  margin: 0;
+  padding: 0;
+  max-height: 100%;
+  color: var(--color-default);
+  .navbar .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
+    color: var(--color-default);
+  }
+  .navbar .navbar-nav .nav-link {
+    color:var(--color-default);
+  }
+}
+
+// ダークモードを制御する
+.dark-mode {
+  --color-background: #130B06;
+  --color-default: #f9f9f9;
+  // --color-text:  #130B06;
+  // --color-accent-1: cyan;
+  // --color-accent-2: magenta;
+  .navbar .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
+    color: var(--color-default);
+  }
+  
 }
 
 .alert {
 	text-align: center;
 }
 .alert-info {
-    background-color: #bde9ff;
-    border-color: #bde9ff;
-    color: #4c6977;
+  background-color: #bde9ff;
+  border-color: #bde9ff;
+  color: #4c6977;
 }
  
 .alert-danger {
-    background-color: #f3c0c0;
-    border-color: #f3c0c0;
-    color: #3e3a3a;
+  background-color: #f3c0c0;
+  border-color: #f3c0c0;
+  color: #3e3a3a;
 }
 
 .center {
-    text-align: center;
+  text-align: center;
 }
 
 .radius-border {
@@ -45,22 +76,40 @@ body {
 }
 
 .nav-menu {
+  height: 50px;
+  margin-top: 30px;
+  opacity: 0.5;
+  font-size: 20px;
   a:hover {
     font-weight: bold;
     }
-    height: 50px;
-    margin-top: 30px;
-    opacity: 0.5;
-    font-size: 20px;
 }
 
 .border-menu {
   a:hover {
     background-color: slategrey;
-    opacity: 0.3;
   }
-  border-left: solid 5px;
+  border-left: solid 10px;
   border-color: lightgreen;
+  width: 230px;
+}
+
+.border-menu2 {
+  a:hover {
+    background-color: slategrey;
+  }
+  border-left: solid 10px;
+  border-color: lightgreen;
+  width: 465px;
+}
+
+.dark-border-menu {
+  a:hover {
+    background-color: slategrey;
+  }
+  border-left: solid 15px;
+  border-color: lightgreen;
+  width: 230px;
 }
 
 .cut {

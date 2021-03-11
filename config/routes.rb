@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   root 'static_pages#join_anizoku'
   namespace :static_pages do
     get :home
-    get :privacy
+    get :display_mode
   end
   
   get '/login', to:'sessions#new'
@@ -14,4 +14,5 @@ Rails.application.routes.draw do
     resources :posts, except: [:destroy, :edit]
   end
   resources :users, only: [:new, :create]
+  resources :works
 end

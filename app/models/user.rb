@@ -1,7 +1,6 @@
 class User < ApplicationRecord
   #ユーザーのトークンを一時的に保存する
   attr_accessor :remember_token
-  enum display_mode: { normal: 0, otaku: 1 }
 
   VALID_EMAIL_RAGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
   has_one :user_profile, dependent: :destroy
