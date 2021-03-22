@@ -16,7 +16,24 @@ CSV_FILE_WORK_TAG_LIST_DESTROY_BEFORE_LIST = "worktag削除前リスト.csv"
 CSV_FILE_WORK_SERIES_LIST = "workの検索結果がnilのデータ.csv"
 CSV_FILE_CHARACTER_LIST = "workの検索結果がnilのデータ_キャラクター.csv"
 CSV_FILE_CAST_LIST = "characterの検索結果がnilのデータ_キャスト.csv"
+CSV_FILE_URL_IMAGE_LIST = "danime_imagesのURLデータ一覧とworksの比較.csv"
 
+# イメージ管理
+CSV_FILE_IMAGE_URL_SF = "images_url_sf.csv"
+CSV_FILE_IMAGE_URL_ROBO_MEKA = "images_url_robo_meka.csv"
+CSV_FILE_IMAGE_URL_ACTION_BATTLE = "images_url_action_battle.csv"
+CSV_FILE_IMAGE_URL_COMEDY_GYG = "images_url_comedy_gyg.csv"
+CSV_FILE_IMAGE_URL_LOVEKOME = "images_url_lovekome.csv"
+CSV_FILE_IMAGE_URL_HONOBONO = "images_url_honobono.csv"
+CSV_FILE_IMAGE_URL_SPORTS = "images_url_sports.csv"
+CSV_FILE_IMAGE_URL_HORA_MISTERY = "images_url_horr_mistery.csv"
+CSV_FILE_IMAGE_URL_HISTORY_SENKI = "images_url_history_senki.csv"
+CSV_FILE_IMAGE_URL_WAR_MIRITARY = "images_url_war_miritary.csv"
+CSV_FILE_IMAGE_URL_DORAMA_YOUTH = "images_url_dorama_youth.csv"
+CSV_FILE_IMAGE_URL_SHORT = "images_url_short.csv"
+CSV_FILE_IMAGE_URL_25BUTAI = "images_url_2.5butai.csv"
+
+# タグのデータ管理（随時追加予定）
 CSV_FILE_SF = "SF_ファンタジー.csv"
 CSV_FILE_ROBOT_MEKA = "ロボット_メカ.csv"
 CSV_FILE_ACTION_BATTLE = "アクション_バトル.csv"
@@ -86,8 +103,8 @@ def get_change_req_url(table: "works", page: 1)
   req_url = "https://api.annict.com/v1/#{table}?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM&page=#{page.to_i}"
 end
 
-#API実行｜jsonデータを配列へ変換し返す
-def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=1980-autumn\&page=1")
+#API実行｜jsonデータを配列へ変換し返す（1980年まで入れた）
+def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=2021-autumn\&page=1")
   req_url = URI.parse(url)
   json = Net::HTTP.get(req_url)
   response = JSON.parse(json)
@@ -163,34 +180,55 @@ end
 
 #csvファイルへ書き出す（追記モード）
 def common_write_csv_file_model_data(parent_model:, child_model:, csv_file_path:, mode: "worktag")
-  parent_data = parent_model.all
+  null_list = Hash.new
   csv_data = CSV.open("db/data/csv/#{csv_file_path}", "w") do |csv|
     column_names = %w(work_id work_title danime_title tag_id tag_name) if mode =="worktag"
     column_names = %w(work_id cast_id work_title cast_title cast_name) if mode =="workcast"
+    column_names = %w(work_id work_title child_id child_title image_url) if mode =="danime_images"
     column_names = %w(id  title) if mode.nil?
     #最初の1行目にカラム設定
     csv << column_names
     
     # column_valuesに代入するカラム値を定義します。
-    parent_data.each do |parent|
-      child_data = child_model.where(title: parent.title)
-      child_data.each do |child|
-        tag = Tag.find_by(id: child.tag_id)
-        if !child.nil?
-          column_values = [
-            parent.id,
-            parent.title,
-            child.title,
-            child.tag_id,
-            tag.name,
-          ]
+    # parent_model.all.each do |parent|
+      # child_data = child_model.where(title: parent.title)
+      # child_data.each do |child|
+        # tag = Tag.find_by(id: child.tag_id)
+        # if !child.nil?
+          # column_values = [
+            # parent.id,
+            # parent.title,
+            # child.title,
+            # child.tag_id,
+            # tag.name,
+          # ]
           # csv << column_valueshは表の行に入る値を定義します。
-          csv << column_values
-        end
+          # csv << column_values
+        # end
+      # end
+    # end
+
+    #danime_imagesの整合性を確認するためのロジック
+    parent_model.find_each do |parent|
+      child_data = child_model.find_by(title: parent.title)
+      if child_data.nil?
+        null_list[parent.id] = parent.title
+      else
+        column_values = [
+          parent.id,
+          parent.title,
+          child_data.id,
+          child_data.title,
+          child_data.image_url,
+        ]
+        # csv << column_valueshは表の行に入る値を定義します。
+        csv << column_values
       end
     end
   end
   puts "ループ終了です〜"
+  puts "作品ID：#{null_list.keys} 作品名：#{null_list.values}"
+  puts "タイトルが合致しなかった件数：#{null_list.size}"
 end
 
 #データ一覧をcsvファイルへ出力する
@@ -264,7 +302,7 @@ def create_csv_null_list(list_item:, columns: nil, mode: "series")
   end
 end
 
-#WEBから画像を取得してくる
+#WEBから画像を取得して保存する
 def get_image_request_download
   Work.all.each do |work|
     url = work.facebook_og_image_url
@@ -466,6 +504,28 @@ def add_work_relation_model(parent_model:, child_model:, fields:, model_name:)
   end
 end
 
+#dbを更新する
+def update_model(parent_model:Work, child_model:)
+  count = 1
+  null_list = Hash.new
+  #1000件ごとにデータを取得しまわす
+  parent_model.find_each do |parent|
+    child_data = child_model.find_by(title: parent.title)
+    #すでに存在する場合は作成しない
+    if child_data.nil?
+      null_list[parent.id] = parent.title
+    else
+      parent.update(image_thumbnail: child_data.image_url.strip)
+      puts "デバッグ:#{count} (W)作品名：#{parent.title} イメージURL：#{child_data.image_url} (D)作品名：#{child_data.title}"
+    end
+    count += 1
+  end
+  puts "ループ終了します〜"
+  puts "作品が合致しなかったタイトル　ID：#{null_list.keys} 作品名：#{null_list.values}"
+  puts "作品が合致しなかったタイトル件数：#{null_list.size}"
+end
+
+#CSVからdbへ保存する
 def open_csv_model_create(tags = "tags")
   count = 1
   #タグデータ新規追加
@@ -476,7 +536,7 @@ def open_csv_model_create(tags = "tags")
       puts "デバッグ#{count}/タグ名：#{row["title"]}"
       count += 1
     end
-  else
+  elsif tags == "danimes"
     begin
       tag = Tag.find_by(name: "")
       #先頭のヘッダーをスキップする
@@ -491,17 +551,28 @@ def open_csv_model_create(tags = "tags")
     rescue => e
       error_msg(e)
     end
+  else
+    CSV.foreach("db/data/csv/#{CSV_FILE_IMAGE_URL_25BUTAI}", headers: true) do |row|
+      DanimeImage.find_or_create_by(
+        title: row["title"],
+        image_url: row["url"],
+      )
+      puts "デバッグ#{count} タイトル:#{row["title"]}：url：#{row["url"]}"
+      count += 1
+    end
   end
 end
 
-# add_work_data
+add_work_data
 # common_add_model_data(name: "organizations")
-# open_csv_model_create("danime")
+# open_csv_model_create("image_url")
 # open_csv_model_create
 # add_work_relation_model(parent_model: Work, child_model: Cast, fields: "work_title", model_name: Workcast)
 # add_work_relation_model(parent_model: Work, child_model: Danime, fields: "title", model_name: Worktags)
 # add_work_relation_model(Work, Danime, "title", Worktag)
 # common_write_csv_file_model_data(parent_model: Work, child_model: Cast,  csv_file_path: CSV_FILE_WORKS_CAST_LIST, mode: "NOT_NULL")
 # common_write_csv_file_model_data(parent_model: Work, child_model: Danime,csv_file_path: CSV_FILE_WORK_TAG_LIST_DESTROY_BEFORE_LIST, mode: "worktag")
+# common_write_csv_file_model_data(parent_model: Work, child_model: DanimeImage,csv_file_path: CSV_FILE_URL_IMAGE_LIST, mode: "danime_images")
 # create_csv_data(model: Worktag, columns: "worktag")
-get_image_request_download
+# get_image_request_download
+# update_model(child_model: DanimeImage)

@@ -3,7 +3,6 @@ class CreateUserProfiles < ActiveRecord::Migration[6.0]
     create_table :user_profiles do |t|
       t.references :user, null: false, foreign_key: true
       t.string :nick_name ,default: "ゲストユーザー"
-      t.string :image, default: ""
       t.string :word
 
       t.timestamps

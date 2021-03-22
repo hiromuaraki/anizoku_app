@@ -62,7 +62,7 @@ body {
 }
 
 .margin-top {
-  margin-top: 70px;
+  margin-top: 90px;
 }
 
 .width-change {
@@ -78,7 +78,7 @@ body {
 .nav-menu {
   height: 50px;
   margin-top: 30px;
-  opacity: 0.5;
+  // opacity: 0.5;
   font-size: 20px;
   a:hover {
     font-weight: bold;
@@ -122,24 +122,41 @@ body {
 }
 .cut_image {			/*縦・横の画像でも一応見れるように微妙に調整されています。*/
 	display: block;
-	height: 150px;
+	// height: 150px;
+	height: auto;
+  width: 313px;
 	position: absolute;
 	left: -50px;
 	top: -20px;
 }
 
+.slider img {
+  width: 100%;
+  height: 50vw;
+  object-fit: cover;
+}
+
 .list-group {
   height: 70px;
-  padding: 20px 20px 10px 0px;
-  font-size: 1.3rem;
+  // padding: 20px 20px 0px 0px;
+  padding: 20px 20px 50px 10px;
+  font-size: 1em;
+  text-align: left;
   font-weight: bold;
   color: #E60914;
   background-color: #FFFFFF;
-  margin: 0.3em 0px;
+  margin: 0.5em 0px;
   border: outset;
-  box-shadow: 2px 2px;
+  border-radius: 30px;
+  // box-shadow: 2px 2px;
 
 }
+
+.col-md-4 {
+  padding-left: -15px;
+  padding-right: -15px;
+}
+
 
 span a:hover {
   text-decoration: none;
@@ -148,6 +165,48 @@ span a:hover {
 i {
   opacity: 0.5;
 }
+
+// 管理者画面 checkboxのサイズを変更する
+.admin {
+  input[type=checkbox] {
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+  }
+}
+
+input[type=search] {
+  width: 600px;
+  height: 50px;
+  border-radius: 30px;
+  margin-top: 80px;
+}
+
+.tooltip-inner{
+  max-width: 100%;
+}
+
+.swiper-wrapper .swiper-slide:hover {
+  display: inline-block;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease 0s;
+  opacity: 0.6;
+  transform: translateY(40px);
+}
+
+// .hover1 {
+  // display: inline-block;
+  // padding: 0.6em 2em;
+  // margin: 0 0 1em;
+  // background-color: #4CAF50;
+  // color: #fff;
+  // cursor: pointer;
+  // transition: all 0.3s ease 0s;
+// }
+// .hover1:hover {
+  // opacity: 0.6;
+// }
 
 /* 全体のスタイル */
 // .swiper-container {

@@ -1,19 +1,20 @@
-<div class="row">
+<div class="row" style="margin-top: 50px">
   <div class="col-md-4">
-    <h3>〜タグから探す〜</h3>
+    <h3><i class="fas fa-search"></i>タグから探す</h3>
   </div>
   <div class="col-md-4">
   </div>
   <div class="col-md-4" style="text-align: right">
-    <h5><%= link_to "もっと見る" %></h5>
+  <%# もっとみるを押したらタグ一覧を表示する %>
+    <h5><%= link_to "もっと見る", tags_tag_list_path %></h5>
   </div>
 </div>
-<div class="mx-auto" style="width: 930px">
+<div style="width: 930px">
   <div class="row">
-    <% @tags.first(9).each do |tag| %>
+    <% @tags.each_with_index do |tag, i| %>
       <div class="col-md-4">
-        <span class="mx-auto btn btn-secondary list-group">
-          <%= tag.name %>
+        <span class="btn btn-secondary list-group">
+          <%= tag.name %>（<%= @tag_group_count[i][1].size %>件）
         </span>
       </div>
     <% end %>

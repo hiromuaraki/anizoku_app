@@ -12,10 +12,13 @@ class Admin::PostsController < AdminController
     @url = request.headers[:referer]
     @work = Work.find(params[:id])
     tag_ids @work, "show"
-    @tags = Tag.tag_list
+    @tags = Tag.tag_all
   end
 
   def new
+  end
+
+  def edit
   end
 
   def create

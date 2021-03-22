@@ -120,9 +120,18 @@ class Tag < ApplicationRecord
     }
   end
 
-  #タグ一覧を返す
+  #絞ったタグ一覧を返す
   def self.tag_list
-    tags = Tag.all
+    Tag.first(9)
+  end
+
+  def self.tag_all
+    Tag.all
+  end
+
+  #各タグをグループ化した配列を返す
+  def self.group_by_tag_ids(tag_ids)
+    tag_ids.group_by(&:itself).to_a
   end
 
 end

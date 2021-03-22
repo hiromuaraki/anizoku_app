@@ -1,16 +1,16 @@
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" interval="3000">
   <div style="border-style: none" class="carousel-inner margin-top center">
     <div class="carousel-item active">
-      <% @works.first(1).each do |work| %>
-        <% if !work.facebook_og_image_url.blank? %>
-          <%= image_tag work.facebook_og_image_url, size: "1000x350", alt: "#{work.title}", class: "img-thumbnail" %>
+      <% @works.first(1).each do |work_tags| %>
+        <% if !work_tags.facebook_og_image_url.blank? %>
+          <%= image_tag work_tags.facebook_og_image_url, size: "1000x350", alt: "#{work_tags.title}", class: "img-thumbnail" %>
         <% end %>
       <% end %>
     </div>
-    <% @works.drop(1).each do |work|%>
-      <% if !work.facebook_og_image_url.blank? %>
+    <% @works.drop(1).each do |work_tags|%>
+      <% if !work_tags.facebook_og_image_url.blank? %>
       <div class="carousel-item">
-        <%= image_tag work.facebook_og_image_url, size: "1000x350", alt: "#{work.title}", class: "img-thumbnail" %>
+        <%= image_tag work_tags.facebook_og_image_url, size: "1000x350", alt: "#{work_tags.title}", class: "img-thumbnail" %>
       </div>
       <% end %>
     <% end %>

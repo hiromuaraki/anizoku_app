@@ -10,7 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_20_142538) do
+ActiveRecord::Schema.define(version: 2021_03_17_095116) do
+
+  create_table "admin_posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "image"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "casts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "character_id", null: false
@@ -39,6 +46,13 @@ ActiveRecord::Schema.define(version: 2021_02_20_142538) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["work_id"], name: "index_characters_on_work_id"
+  end
+
+  create_table "danime_images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "title"
+    t.string "image_url", default: "", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "danimes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -87,7 +101,6 @@ ActiveRecord::Schema.define(version: 2021_02_20_142538) do
   create_table "user_profiles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "nick_name", default: "ゲストユーザー"
-    t.string "image", default: ""
     t.string "word"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -100,6 +113,7 @@ ActiveRecord::Schema.define(version: 2021_02_20_142538) do
     t.string "password_digest"
     t.string "remember_digest"
     t.boolean "admin", default: false
+    t.string "image", default: ""
     t.boolean "display_mode", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -121,6 +135,7 @@ ActiveRecord::Schema.define(version: 2021_02_20_142538) do
     t.integer "season_year", null: false
     t.string "title", null: false
     t.integer "episodes_count", default: 0, null: false
+    t.string "image_thumbnail", default: "", null: false
     t.string "facebook_og_image_url", default: "", null: false
     t.date "released_at"
     t.string "media", null: false

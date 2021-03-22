@@ -13,6 +13,7 @@ class Work < ApplicationRecord
   has_many :staffs,     dependent: :destroy
   
   scope :where_array, ->(work_id) { where(id: work_id) }
+
   scope :where_season, ->(season, year) do
     season ? where(season_year: year) : where(season_name_text: year)
   end
@@ -24,7 +25,15 @@ class Work < ApplicationRecord
     works_ids = where_season(false, year_join_nen(year) + current_season).ids
   end
 
-  #現在年から2010年まで年数を取得する
+  def self.eager_load_worktags_ids(tag_id)
+    Work.includes(:worktags).where(worktags: {tag_id: tag_id}).ids
+  end
+
+  def self.limit_work_ids(tag_id)
+    Work.eager_load(:worktags).where(worktags: {tag_id: tag_id}).order(season_year: :desc).ids
+  end
+
+  #現在年から2020年まで年数を取得する
   def self.year_list
     YEAR_LIST.to_a
   end
@@ -37,7 +46,12 @@ class Work < ApplicationRecord
   #season_name_text検索時の加工のため年を連結する
   def self.year_join_nen(year)
     year.to_s + "年"
-  end 
+  end
+
+  #重複した要素を取り除き返す
+  def self.elements_uniq!(items)
+    items.uniq!
+  end
 
   #現在の季節を返す
   def self.current_season
