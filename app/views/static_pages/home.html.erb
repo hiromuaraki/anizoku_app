@@ -7,9 +7,19 @@
   <%= render "/shared/slider" %>
   <%# ナビゲーション %>
   <%= render "/shared/navbar" %>
-  <%# コンテンツ %>
-  <%= render "/shared/contents" %>
+  <%# コンテンツ 今期 %>
   <%= javascript_pack_tag "home/slider" %>
+  <%= render "/shared/contents-konki" %>
+
+  <%# コンテンツ 管理人のおすすめ%>
+  <%= render "/shared/contents-recomended" %>
+  
+  <%# コンテンツ 元気がない時に見たい%>
+  <%= render "/shared/contents-feel-sad" %>
+  
+  <%# コンテンツ 現実逃避したい%>
+  <%= render "/shared/contents-real-escape" %>
+  
   <%# タグ一覧 %>
   <%= render "/shared/tags" %>
 </div>

@@ -8,11 +8,14 @@ Rails.application.routes.draw do
   get '/login', to:'sessions#new'
   post '/login', to:'sessions#create'
   delete 'logout', to:'sessions#destroy'
+  get '/tags/tag_list', to: "tags#index"
   
   namespace :admin do
     get :menu
-    resources :posts, except: [:destroy, :edit]
+    resources :posts, except: :destroy
+    resources :images
   end
+  
   resources :users, only: [:new, :create]
   resources :works
 end

@@ -10,6 +10,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: { case_sensitive: false }, length: { maximum: 255 }, format: { with: VALID_EMAIL_RAGEX }
   validates :name,  presence: true
   has_secure_password
+  #イメージ画像をアップロードするためのマウント
+  mount_uploader :image, ImageUploader
   
   #渡された文字列のハッシュ値を返す
   def digest(string)

@@ -1,0 +1,15 @@
+<div class="container margin-top">
+<h1>画像編集する</h1>
+<p style="text-align: right"><%= link_to "一覧へ戻る", admin_posts_path, class:"btn btn-outline-primary" %></p>
+  <%= form_with url: admin_images_path(id: current_user.id) ,method: :post, local: true do |f| %>
+    <div class="mb-3">
+        <h5><%= f.label :title, "画像名", class: "form-label", for: "formGroupExampleInput" %></h5>
+        <h3><%= f.text_field :title, class: "form-control", id: "formGroupExampleInput" %></h3>
+    </div>
+    <div class="mb-3">
+      <%= f.label :image, "編集する画像", class: "form-label", for: "formGroupExampleInput2" %>
+    <div class="mb-3">
+      <%= f.file_field :image %><%= f.submit "画像をアップロードする" ,class: ["btn btn-outline-primary"], data: {confirm: "画像名は間違っていませんか？"}, placeholer: "タイトル入力欄" %>
+    </div>
+  <% end %>
+</div>

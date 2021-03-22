@@ -1,0 +1,2 @@
+class DanimeImage < ApplicationRecord
+end
