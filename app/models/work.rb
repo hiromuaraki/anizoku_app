@@ -3,7 +3,7 @@ class Work < ApplicationRecord
   has_many :worktags, dependent: :destroy
   has_many :tags, through: :worktags
 
-  YEAR_LIST = 2020..(Time.now.year)
+  YEAR_LIST = 2020..(Time.current.year)
   
   #アニメと声優情報を紐付ける
   has_many :workcasts, dependent: :destroy
@@ -16,6 +16,11 @@ class Work < ApplicationRecord
 
   scope :where_season, ->(season, year) do
     season ? where(season_year: year) : where(season_name_text: year)
+  end
+
+  #重複しない前方に一致したアニメデータを取得する
+  scope :where_search_works, ->(key) do
+    where("title LIKE ?", "%#{key}%").where(is_deleted: true).order(season_year: :desc)
   end
 
   #今期のアニメのwork_idを取得する
@@ -40,7 +45,7 @@ class Work < ApplicationRecord
 
   #現在年を返す
   def self.this_term
-    Time.now.year
+    Time.current.year
   end
 
   #season_name_text検索時の加工のため年を連結する
@@ -55,7 +60,7 @@ class Work < ApplicationRecord
 
   #現在の季節を返す
   def self.current_season
-    current_month = Time.now.month
+    current_month = Time.current.month
     case current_month
       when 1, 2, 3 then
         current_season = "冬"
@@ -66,5 +71,11 @@ class Work < ApplicationRecord
       when 10, 11, 12 then
         current_season = "秋"
     end
-  end 
+  end
+
+  #入力されたキーワードを空白ごとに分割した結果を返す
+  def self.keywords_split(keywords)
+    keywords.split(/[[:blank:]]+/)
+  end
+
 end

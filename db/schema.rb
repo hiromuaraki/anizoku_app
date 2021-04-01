@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_17_095116) do
+ActiveRecord::Schema.define(version: 2021_03_24_065048) do
 
   create_table "admin_posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "title", null: false
@@ -146,6 +146,7 @@ ActiveRecord::Schema.define(version: 2021_03_17_095116) do
     t.string "twitter_username"
     t.string "recommended_image_url", default: "", null: false
     t.text "wikipedia_url", null: false
+    t.boolean "is_deleted", default: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

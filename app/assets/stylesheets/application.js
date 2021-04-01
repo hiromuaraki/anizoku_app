@@ -1,8 +1,8 @@
-//= require bootstrap/dist/css/bootstrap.min.css
-//= require rails-ujs
-//= require turbolinks
-//= require jquery3
-//= require bootstrap-sprockets
+//= require jquery
+//= require jquery_ujs
 //= require bootstrap
-
+//= require turbolinks
+//= require react
+//= require react_ujs
 // = require data-confirm-modal
+

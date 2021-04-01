@@ -9,13 +9,14 @@
       <th scope="col">Row_no</th>
       <th scope="col">Media</th>
       <th scope="col">Title</th>
-      <th scope="col">img_url</th>
+      <th scope="col">Img_rl</th>
       <th scope="col">Episond_count</th>
       <th scope="col">Year</th>
       <th scope="col">Season</th>
       <th scope="col">Tag_count</th>
       <th scope="col">Work_id</th>
       <th scope="col">Tag_ids</th>
+      <th scope="col">Is_deleted</th>
       <th scope="col">Show_view</th>
     </tr>
   </thead>
@@ -23,7 +24,7 @@
     <% @works.each_with_index do |work, i| %>
       <tr>
         <th scope="row"><%= i + 1 %></th>
-        <td class="center"><%= work.media.upcase %></td>
+        <td class="center"><%= work.str_upcase(work.media) %></td>
         <td><h5 class="card-title"><%= link_to "#{work.title}", work.wikipedia_url, target: :_blank %></h5></td>
         <% if work.facebook_og_image_url.blank? %>
           <td class="center" style="color: red"><%= "True" %></td>
@@ -36,6 +37,7 @@
         <td class="center"><%= @tag_ids[i].size %></td>
         <td class="center"><%= work.id%></td>
         <td><%= @tag_ids[i] %></td>
+        <td><%= work.is_deleted %></td>
         <td><strong><%= link_to "詳細", admin_post_path(work.id), class: "btn btn-primary" %></strong></td>
       </tr>
     <% end %>

@@ -1,0 +1,82 @@
+<div class="container">
+<p><%= render("shared/search")%></p>
+<%= javascript_pack_tag "searchs/tabs" %>
+
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+    <%# 作品名タブ %>
+      <a class="nav-link" id="work-tab" data-toggle="tab" href="#work-tab" role="tab" aria-controls="work" aria-selected="true">作品名 <%=@search_works.size%>件</a>
+    </li>
+    <li class="nav-item">
+    <%# キャラクター名タブ %>
+      <a class="nav-link" id="character-tab" data-toggle="tab" href="#character-tab" role="tab" aria-controls="character" aria-selected="false">キャラクター名 <%=@search_characters.size%>件</a>
+    </li>
+  </ul>
+
+  <%# アニメタイトルの検索結果を表示する %>
+  <div class="tab-content">
+    <div class="tab-pane fade show" id="work" role="tabpanel" aria-labelledby="work-tab">
+      <div class="card mb-3" style="max-width: 1000px;">
+        <% if !params[:q][:title_cont].blank?%>
+          <% @search_works.each do |work| %>
+            <% if !work.blank?%>
+              <div class="row g-0">
+                <div class="col-md-6">
+                  <%= link_to image_tag work.facebook_og_image_url, alt: "#{work.title}", class: "img-thumbnail"%>
+                </div>
+                <div class="col-md-6">
+                  <div class="card-body">
+                    <h3 style="color: #FFFFFF"><span class="card-text badge rounded-pill bg-primary"><small><%= work.season_name_text %></small></span></h3>
+                    <h5 class="card-title"><%= work.title %></h5>
+                    <p class="card-text">あらすじがくる予定</p>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% else %>
+        <%# 未入力の時は検索結果なしの画像を表示する %>
+        <% end %>
+      </div>
+    </div>
+
+      <%# キャラクター名の検索結果一覧を表示する %>
+      <div class="tab-pane fade show" id="character" role="tabpanel" aria-labelledby="character-tab">
+        <div class="card mb-3" style="max-width: 800px;">
+          <% if !params[:q][:title_cont].blank?%>
+            <% @search_characters.each do |character| %>
+              <% if !character.blank? && !character.nil? %>
+                <div class="row g-0">
+                  <%# <div class="col-md-4"> %>
+                    <%# <%= image_tag "no_image.png", class: "img-thumbnail", size: "400x200"  %>
+                  <%# </div> %>
+                    <div class="col-md-12">
+                      <div class="card-body">
+                        <h2><span class="card-text"><small><%= character&.name %>：CV <%= "声優" %></small></span></h2>
+                        <h2>プロフィール</h2>
+                        <ul>
+                          </li>誕生日：<%= character&.birthday %></li>
+                          </li>血液型：<%= character&.blood_type %></li>
+                          </li>年齢：<%= character&.age %>歳</li>
+                        </ul>
+                        <h5 class="card-title"><%= character&.nick_name %></h5>
+                        <p class="card-text">簡単な紹介：<%= character&.description %></p>
+                        <p class="card-text">紹介引用元：<%= character&.description_source %></p>
+                      </div>
+                    </div>
+                </div>
+              <% end %>
+            <% end %>
+          <% else %>
+          <%# 未入力の時は検索結果なしの画像を表示する %>
+          <% end %>
+        </div>
+      </div>
+
+    <%# キャスト名の検索結果一覧を表示する %>
+    <%# <div class="tab-pane fade" id="character-tab" role="tabpanel" aria-labelledby="character-tab"> %>
+    <%# </div> %>
+
+  </div>
+  
+</div>
