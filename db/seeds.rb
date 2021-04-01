@@ -6,6 +6,7 @@ require "json"
 require "csv"
 require 'open-uri'
 
+#検証用
 CSV_FILE_TAG = "タグデータ.csv"
 CSV_FILE_NULL_LIST = "worksにないデータ一覧.csv"
 CSV_FILE_NOT_NULL_LIST = "worksにあるデータ一覧.csv"
@@ -32,6 +33,10 @@ CSV_FILE_IMAGE_URL_WAR_MIRITARY = "images_url_war_miritary.csv"
 CSV_FILE_IMAGE_URL_DORAMA_YOUTH = "images_url_dorama_youth.csv"
 CSV_FILE_IMAGE_URL_SHORT = "images_url_short.csv"
 CSV_FILE_IMAGE_URL_25BUTAI = "images_url_2.5butai.csv"
+
+#各VOD
+CSV_FILE_IMAGE_URL_ABEMA = "abema_image_url.csv"
+CSV_FILE_IMAGE_URL_AMAZON_PRIME = "amazon_prime_list.csv"
 
 # タグのデータ管理（随時追加予定）
 CSV_FILE_SF = "SF_ファンタジー.csv"
@@ -84,6 +89,7 @@ CSV_FILE_SUPER_MOEMOE = "超超萌え萌え.csv"
 CSV_FILE_EVERY_ONE_RECOMEND = "みんなのおすすめ.csv"
 CSV_FILE_HAREM = "ハーレム.csv"
 
+#APIの１Pの最大ページ数
 NEXT_PAGE_NO = 24
 
 #mainメソッド
@@ -99,12 +105,12 @@ def first_requst(req_name)
 end
 
 #ページ数を動的に変更する
-def get_change_req_url(table: "works", page: 1)
-  req_url = "https://api.annict.com/v1/#{table}?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM&page=#{page.to_i}"
+def get_change_req_url(table: "works", page_no: 1)
+  req_url = "https://api.annict.com/v1/#{table}?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM&page=#{page_no.to_i}"
 end
 
 #API実行｜jsonデータを配列へ変換し返す（1980年まで入れた）
-def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=2021-autumn\&page=1")
+def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=2021-autumn\&page=2")
   req_url = URI.parse(url)
   json = Net::HTTP.get(req_url)
   response = JSON.parse(json)
@@ -143,17 +149,13 @@ def response_not_nil?(response, req_name)
       #各モデルを追加する
       case req_name
       #characterとcastsは「casts」リクエストで行う  
-      when "casts"  then
-        add_cast_data(data, null_list)
-        add_character_data(data, null_list) 
-      when "organizations" then
-        add_organization_data(data)
-      when "staffs" then
-        add_staffs_data(data)
-      when "series" then
-        add_series_data(data, null_list)
-      when "works"  then
-        add_work_data
+        when "casts"  then
+          add_cast_data(data, null_list)
+          # add_character_data(data, null_list) 
+        when "organizations" then add_organization_data(data)
+        when "staffs" then add_staffs_data(data)
+        when "series" then add_series_data(data, null_list)
+        when "works"  then add_work_data
       end
 
       if index == NEXT_PAGE_NO
@@ -284,8 +286,8 @@ end
 #モデルにないデータを書き出す
 def create_csv_null_list(list_item:, columns: nil, mode: "series")
   csv_file_path = mode == "series" ? CSV_FILE_WORK_SERIES_LIST : CSV_FILE_CAST_LIST
+  csv_file_path = mode == "characters" ? CSV_FILE_CHARACTER_LIST : CSV_FILE_CAST_LIST
   csv_data = CSV.open("db/data/csv/#{csv_file_path}", "w") do |csv|
-    column_names = %w(item_no item)
     column_names = %w(work_id cast_id work_title cast_title cast_name) if mode == "workcast"
     column_names = %w(id  title) if columns.nil?
     #最初の1行目にカラム設定
@@ -329,11 +331,9 @@ private
 #workIDの存在をチェックし保存を実行する
 def add_series_data(series, null_list)
   begin
-    works = Work.where("title like?", "%#{series["name"]}%")
-    if works.size >= 1
-      works.each do |work|
-        create_series(work, series)
-      end
+    work = Work.find_by("title LIKE ?", "#{series["name"]}%")
+    if !work.nil?
+      create_series(work, series)
     else
       null_list << series["name"]
       create_csv_null_list(list_item: null_list, mode: "series")
@@ -354,12 +354,16 @@ end
 
 #キャラクターの追加
 def add_character_data(character, null_list)
-  begin
-    work = Work.find_by(title: character["work"]["title"])
-    if work.nil?
-      null_list << character["work"]["title"]
-      create_csv_null_list(list_item: null_list)
-    end
+  puts character["character"]["name"] if character["character"]["name"] == "日南葵"
+  puts "作品名がNILLです！！" if character["work"]["title"].blank?
+
+  work = Work.find_by(title: "#{character["work"]["title"]}")
+  char =  Character.find_by(name: "#{character["character"]["name"]}")
+  if work.nil?
+    null_list << character["work"]["title"]
+    create_csv_null_list(list_item: null_list, mode: "characters")
+  end
+  if char.nil? && !work.nil?
     Character.find_or_create_by(
       work_id: work&.id, 
       name: character["character"]["name"],
@@ -370,20 +374,18 @@ def add_character_data(character, null_list)
       description: character["character"]["description"],
       description_source: character["character"]["description_source"]
     )
-    puts "work_id：#{work&.id}/タイトル：#{character["work"]["title"]}/キャラクター名：#{character["character"]["name"]}"
-  rescue => e
-    error_msg(e)
   end
 end
 
 #キャストの追加
 def add_cast_data(cast, null_list)
-  begin
-    character = Character.find_by(name: cast["character"]["name"])
-    if character.nil?
-      null_list << cast["work"]["title"]
-      create_csv_null_list(list_item: null_list, columns: nil, mode: "cast")
-    end
+  character = Character.find_by(name: "#{cast["character"]["name"]}")
+  cast_data = Cast.find_by(work_title: "#{cast["work"]["title"]}")
+  if character.nil?
+    null_list << cast["work"]["title"]
+    create_csv_null_list(list_item: null_list, columns: nil, mode: "cast")
+  end
+  if cast_data.nil? && !character.nil?
     Cast.find_or_create_by(
       character_id: character.id,
       work_title: cast["work"]["title"],
@@ -395,11 +397,8 @@ def add_cast_data(cast, null_list)
       url: cast["person"]["url"],
       wikipedia_url: cast["person"]["wikipedia_url"] 
     )
-    puts "#{character&.id}：キャスト：#{cast["person"]["name"]}：タイトル：#{cast["work"]["title"]}：キャラクター:#{cast["character"]["name"]}"
-    
-  rescue => e
-    error_msg(e)
   end
+  puts "#{character&.id}：キャスト：#{cast["person"]["name"]}：タイトル：#{cast["work"]["title"]}：キャラクター:#{cast["character"]["name"]}"
 end
 
 #スタッフの追加
@@ -437,17 +436,36 @@ def add_organization_data(organization)
   end
 end
 
-#アニメデータの追加
+#アニメデータの追加（論理削除カラム追加）
 def add_work_data
   table_name = "works"
   response = request_api
+  data = nil
   response[table_name].each do |work|
-    begin
-      Work.find_or_create_by(
+    data = Work.find_by(title: "#{work["title"]}")
+    if data.nil?
+      Work.create(
         season_name: work["season_name"],
         season_name_text: work["season_name_text"],
         season_year: work["season_name"],
         title: work["title"],
+        episodes_count: work["episodes_count"],
+        image_thumbnail: "",
+        facebook_og_image_url: work["images"]["facebook"]["og_image_url"],
+        released_at: work["released_at"],
+        media: work["media"],
+        media_text: work["media_text"],
+        official_site_url: work["official_site_url"],
+        twitter_hashtag: work["twitter_hashtag"],
+        twitter_image_url: work["images"]["twitter"]["twitter_image_url"].nil? ? "" : work["images"]["twitter"]["twitter_image_url"],
+        twitter_username: work["twitter_username"],
+        recommended_image_url: work["images"]["recommended_image_url"].nil? ? "" : work["images"]["recommended_image_url"],
+        wikipedia_url: work["wikipedia_url"],
+        is_deleted: true
+      )
+    else
+      #更新処理
+      data.update(
         episodes_count: work["episodes_count"],
         facebook_og_image_url: work["images"]["facebook"]["og_image_url"],
         released_at: work["released_at"],
@@ -459,20 +477,19 @@ def add_work_data
         twitter_username: work["twitter_username"],
         recommended_image_url: work["images"]["recommended_image_url"].nil? ? "" : work["images"]["recommended_image_url"],
         wikipedia_url: work["wikipedia_url"]
-        
       )
-    rescue ActiveRecord::RecordNotUnique
-      retry
     end
   end
 end
 
 #アニメと声優のデータを紐付ける
 def add_workcasts_data(work, cast)
-  Workcast.find_or_create_by(
-    work_id: work.id,
-    cast_id: cast.id
-  )
+  if !work.nil? && !cast.nil?
+    Workcast.find_or_create_by(
+      work_id: work.id,
+      cast_id: cast.id
+    )
+  end
   puts "ID：#{work.id}:#{cast.id}:title:#{work.title}:work_title:#{cast.work_title}:CV#{cast.name}"
 end
 
@@ -489,22 +506,22 @@ end
 
 #workテーブルと各関連モデルを紐付け、データを追加する
 def add_work_relation_model(parent_model:, child_model:, fields:, model_name:)
-  parent_model.all.each do |parent|
+  parent_model.find_each do |parent|
     tag_ids = []
     # child_model.where(title: parent.title).each do |child|
-    child_model.where(work_title: parent.title).each do |child|
+    child_model.where(work_title: "#{parent.title}").each do |child|
       
       case model_name.name
-      when "Worktag" then
-        add_worktags_data(parent, child, tag_ids)
-      when "Workcast" then
-        add_workcasts_data(parent, child)
+        when "Worktag" then
+          add_worktags_data(parent, child, tag_ids)
+        when "Workcast" then
+          add_workcasts_data(parent, child)
       end
     end
   end
 end
 
-#dbを更新する
+#dbを更新する(1000件ずつ取得する)
 def update_model(parent_model:Work, child_model:)
   count = 1
   null_list = Hash.new
@@ -523,6 +540,38 @@ def update_model(parent_model:Work, child_model:)
   puts "ループ終了します〜"
   puts "作品が合致しなかったタイトル　ID：#{null_list.keys} 作品名：#{null_list.values}"
   puts "作品が合致しなかったタイトル件数：#{null_list.size}"
+end
+
+#worksのimage_thumbnailを一括で更新する
+def update_image_thumbnail(csv_file_path:)
+  count = 1
+  CSV.foreach("db/data/csv/#{csv_file_path}", headers: true) do |row|
+    work = Work.find_by(title: row["title"])
+     work.update(image_thumbnail: row["image_url"]) if !work.nil? && work.image_thumbnail.blank?
+     count += 1
+     
+     puts "デバッグ#{count}/タグ名：#{row["title"]}"
+  end
+end
+
+#重複したアニメタイトルを取得し削除フラグを一括更新する
+def duplicate_title
+  data = []
+  work_id = [] 
+  duplicate_title = Work.select(:title).group(:title).having('count(*) > ?', 1).count
+
+  duplicate_title.keys.each do |works|
+    data << Work.find_by(title: works)
+  end
+
+  data.sort.each {|work_data| work_data.update(is_deleted: false)}
+  data.sort.each do |work_data|
+    puts "作品：#{work_data.id}　タイトル：#{work_data.title} 年代：#{work_data.season_name_text}"
+    work_id << work_data.id
+  end
+
+  puts "更新完了です~"
+  puts "ID一覧：#{work_id}"
 end
 
 #CSVからdbへ保存する
@@ -563,16 +612,66 @@ def open_csv_model_create(tags = "tags")
   end
 end
 
-add_work_data
-# common_add_model_data(name: "organizations")
+def include_protocol?
+  count = 1
+  blank_count = 0
+  work_null_list = Hash.new
+  array = ["http", "https"]
+  Work.find_each do |work|
+    if !work.image_thumbnail.blank?
+      image_url = work.image_thumbnail.split("/").include?(array)
+      # image_url = array.any? {|h| w.include?(h)}
+      if image_url
+        work_null_list[work.id] = work.image_thumbnail
+        count += 1
+      end
+    else
+      blank_count += 1
+    end
+  end
+  puts "プロトコルが含まれてないない：#{count}件"
+  puts "image_thumbnailがブランク：#{blank_count}件"
+  puts "プロトコルが含まれてないないID：#{work_null_list}"
+end
+
+#アニメを追加
+# add_work_data
+
+#モデルをAPIを実行し追加（mainメソッド）
+# common_add_model_data(name: "casts")
+
+#csvファイルのdanimeのimageデータをモデルへ追加
 # open_csv_model_create("image_url")
+
+#tagsやdanimesのデータを引数によって追加
 # open_csv_model_create
+
+#関連付けされたモデルのデータを追加する
 # add_work_relation_model(parent_model: Work, child_model: Cast, fields: "work_title", model_name: Workcast)
 # add_work_relation_model(parent_model: Work, child_model: Danime, fields: "title", model_name: Worktags)
 # add_work_relation_model(Work, Danime, "title", Worktag)
+
+
+#データの比較検証用　csvファイルへ新規データ書き込み
 # common_write_csv_file_model_data(parent_model: Work, child_model: Cast,  csv_file_path: CSV_FILE_WORKS_CAST_LIST, mode: "NOT_NULL")
 # common_write_csv_file_model_data(parent_model: Work, child_model: Danime,csv_file_path: CSV_FILE_WORK_TAG_LIST_DESTROY_BEFORE_LIST, mode: "worktag")
 # common_write_csv_file_model_data(parent_model: Work, child_model: DanimeImage,csv_file_path: CSV_FILE_URL_IMAGE_LIST, mode: "danime_images")
+
+#検証用　モデルのリレーションデータ一覧をcsvファイルへ出力する
 # create_csv_data(model: Worktag, columns: "worktag")
+
+#URLよりimageをダウンロードしassets配下へ保存する
 # get_image_request_download
+
+#モデルの既存データを更新する（まだ途中）
 # update_model(child_model: DanimeImage)
+
+#アニメタイトルの重複データを取得する
+# duplicate_title
+# duplicate_name
+
+#サムネイルの更新
+# update_image_thumbnail(csv_file_path: CSV_FILE_IMAGE_URL_ACTION_BATTLE)
+
+#プロトコルがURLに含まれているかどうか
+include_protocol?
