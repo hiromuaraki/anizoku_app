@@ -10,13 +10,13 @@ Rails.application.routes.draw do
   get '/display_mode', to: 'static_pages#display_mode'
   get '/tags/tag_list', to: 'tags#index'
   get'/search', to: 'searchs#item_search'
-
+  
   namespace :admin do
     get :menu
     resources :posts, except: :destroy
     resources :images
   end
-
+  
   namespace :api do
     namespace :v1 do
       get 'search', to: 'search#index'
@@ -24,4 +24,5 @@ Rails.application.routes.draw do
   end
   
   resources :users, only: [:new, :create]
+  get 'cast_works/', to: 'cast_works#index'
 end

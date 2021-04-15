@@ -4,7 +4,7 @@ class Admin::PostsController < AdminController
   end
 
   def index
-    @works   = Work.includes(:worktags).page(params[:page]).order(id: :asc, season_year: :desc)
+    @works   = Work.includes(:worktags).page(params[:page]).order(season_year: :desc)
     tag_ids @works, "index"
   end
 

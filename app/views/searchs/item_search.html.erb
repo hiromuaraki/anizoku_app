@@ -1,79 +1,96 @@
 <div class="container">
-<p><%= render("shared/search")%></p>
-<%= javascript_pack_tag "searchs/tabs" %>
+<p><%= render("shared/search") %></p>
 
   <ul class="nav nav-tabs" role="tablist">
     <li class="nav-item">
-    <%# 作品名タブ %>
-      <a class="nav-link" id="work-tab" data-toggle="tab" href="#work-tab" role="tab" aria-controls="work" aria-selected="true">作品名 <%=@search_works.size%>件</a>
+      <a class="nav-link active" id="work-tab" data-toggle="tab" href="#work-tab" role="tab" aria-controls="work" aria-selected="true">作品名 <span style="color: #FFFFFF" class="card-text badge rounded-pill bg-primary"><%= @works.size %></span></a>
     </li>
     <li class="nav-item">
-    <%# キャラクター名タブ %>
-      <a class="nav-link" id="character-tab" data-toggle="tab" href="#character-tab" role="tab" aria-controls="character" aria-selected="false">キャラクター名 <%=@search_characters.size%>件</a>
+      <a class="nav-link" id="character-tab" data-toggle="tab" href="#character-tab" role="tab" aria-controls="character" aria-selected="false">キャスト名 <span style="color: #FFFFFF" class="card-text badge rounded-pill bg-primary"> <%= @cast_count %></a>
     </li>
   </ul>
 
   <%# アニメタイトルの検索結果を表示する %>
   <div class="tab-content">
-    <div class="tab-pane fade show" id="work" role="tabpanel" aria-labelledby="work-tab">
-      <div class="card mb-3" style="max-width: 1000px;">
-        <% if !params[:q][:title_cont].blank?%>
-          <% @search_works.each do |work| %>
-            <% if !work.blank?%>
-              <div class="row g-0">
-                <div class="col-md-6">
-                  <%= link_to image_tag work.facebook_og_image_url, alt: "#{work.title}", class: "img-thumbnail"%>
+    <div class="tab-pane fade show active" id="work" role="tabpanel" aria-labelledby="work-tab">
+      <div class="card mb-3" style="max-width: 1200px">
+        <% if !@works.blank? %>
+          <% @works.each do |work| %>
+            <div class="row g-0">
+              <div class="col-md-7">
+                <%= link_to image_tag !work&.facebook_og_image_url.blank? ? work&.facebook_og_image_url : "no_image", alt: "#{work.title}", class: "img-thumbnail", size: "500x267" %>
+              </div>
+              <div class="col-md-5">
+                <div class="card-body">
+                <div style="color: #FFFFFF; font-size: 1.2em;">
+                  <span class="card-text badge rounded-pill bg-primary"><%= work.season_name_text %></span>
+                  <span class="card-text badge rounded-pill bg-primary"><%= work.media_text %></span>
                 </div>
-                <div class="col-md-6">
-                  <div class="card-body">
-                    <h3 style="color: #FFFFFF"><span class="card-text badge rounded-pill bg-primary"><small><%= work.season_name_text %></small></span></h3>
-                    <h5 class="card-title"><%= work.title %></h5>
-                    <p class="card-text">あらすじがくる予定</p>
-                  </div>
+                  <h5 class="card-title"><%= work.title %></h5>
+                  <p class="card-text">あらすじがくる予定</p>
                 </div>
               </div>
-            <% end %>
+            </div>
           <% end %>
-        <% else %>
-        <%# 未入力の時は検索結果なしの画像を表示する %>
+        <% else%>  
+          <%# 検索結果がない時、準備中を表示する %>
         <% end %>
       </div>
     </div>
 
-      <%# キャラクター名の検索結果一覧を表示する %>
+      <%# 声優名の検索結果一覧を表示する %>
       <div class="tab-pane fade show" id="character" role="tabpanel" aria-labelledby="character-tab">
-        <div class="card mb-3" style="max-width: 800px;">
-          <% if !params[:q][:title_cont].blank?%>
-            <% @search_characters.each do |character| %>
-              <% if !character.blank? && !character.nil? %>
+        <div class="card mb-3" style="max-width: 1200px">
+          <% count = 0 %>
+          <% cast_list = [] %>
+          <% if !@works.blank? %>
+            <% @works.size.times do |index|%>
+              <% @works[index].casts.each_with_index do |cast, i| %>
                 <div class="row g-0">
-                  <%# <div class="col-md-4"> %>
-                    <%# <%= image_tag "no_image.png", class: "img-thumbnail", size: "400x200"  %>
-                  <%# </div> %>
-                    <div class="col-md-12">
-                      <div class="card-body">
-                        <h2><span class="card-text"><small><%= character&.name %>：CV <%= "声優" %></small></span></h2>
-                        <h2>プロフィール</h2>
-                        <ul>
-                          </li>誕生日：<%= character&.birthday %></li>
-                          </li>血液型：<%= character&.blood_type %></li>
-                          </li>年齢：<%= character&.age %>歳</li>
-                        </ul>
-                        <h5 class="card-title"><%= character&.nick_name %></h5>
-                        <p class="card-text">簡単な紹介：<%= character&.description %></p>
-                        <p class="card-text">紹介引用元：<%= character&.description_source %></p>
-                      </div>
+                  <div class="col-md-12">
+                    <div class="card-group">
+                      <% if !cast_list.include?(cast&.name)%>
+                        <div class="card">
+                          <div class="card-body">
+                            <h3 class="card-title"><i class="fas fa-microphone-alt"></i> <%= link_to cast&.name, cast_works_path(params: {cast_data: {cast_name: cast.name} }), method: :post %></h3>
+                            <% cast_list << cast&.name %>
+                            <p class="card-text">ニックネーム：現在準備中🙇‍♂️</p> 
+                          </div>
+                          <div class="card-footer">
+                            <h6 class="text-muted">キャラクター名：<%= !@characters.blank? ? @characters[count] : "現在準備中です🙇‍♀️" %></h6>
+                            <% count += 1%>
+                          </div>
+                        </div>
+                      <% end %>
                     </div>
+                  </div>
                 </div>
               <% end %>
             <% end %>
+          <% elsif !@works.blank? && params[:q][:title_cont].split(/[[:blank:]]+/).size > 1 %>
+            <% @casts.each_with_index do |cast, i| %>
+              <div class="row g-0">
+                <div class="col-md-12">
+                  <div class="card-group">
+                    <div class="card">
+                      <div class="card-body">
+                        <h3 class="text-muted"><i class="fas fa-microphone-alt"> </i><%= link_to cast, cast_works_path(params: {cast_data: {cast_name: cast.name}}) %></h3>
+                        <p class="card-text">ニックネーム：現在準備中🙇‍♂️</p>
+                      </div>
+                      <div class="card-footer">
+                        <h6 class="card-title">キャラクター名：<%= @characters[i] %></h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           <% else %>
-          <%# 未入力の時は検索結果なしの画像を表示する %>
+            <%# データがない時に画像を表示する %>
           <% end %>
         </div>
       </div>
 
-    <%# キャスト名の検索結果一覧を表示する %>
     <%# <div class="tab-pane fade" id="character-tab" role="tabpanel" aria-labelledby="character-tab"> %>
     <%# </div> %>
 

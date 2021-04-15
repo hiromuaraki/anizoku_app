@@ -16,7 +16,7 @@
       <%# アニメ画像のリクエストURLがある時だけ %>
         <% if work.url_exist?(work.facebook_og_image_url) != "404" && work.url_exist?(work.facebook_og_image_url) != "500" %>
           <div class="swiper-slide">
-            <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail" %></span>
+            <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url.blank? ? work.image_thumbnail : work.facebook_og_image_url  ,alt: "#{work.title}",class: "img-thumbnail", size: "303x159" %></span>
           </div>
         <% end %>
       <% end %>

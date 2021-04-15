@@ -3,7 +3,7 @@ class Work < ApplicationRecord
   has_many :worktags, dependent: :destroy
   has_many :tags, through: :worktags
 
-  YEAR_LIST = 2020..(Time.current.year)
+  YEAR_LIST = 2015..(Time.current.year)
   
   #アニメと声優情報を紐付ける
   has_many :workcasts, dependent: :destroy
@@ -20,7 +20,15 @@ class Work < ApplicationRecord
 
   #重複しない前方に一致したアニメデータを取得する
   scope :where_search_works, ->(key) do
-    where("title LIKE ?", "%#{key}%").where(is_deleted: true).order(season_year: :desc)
+    where("title LIKE ?", "%#{key}%").order(season_year: :desc)
+  end
+
+  #年代ごとのアニメ作品を取得する
+  scope :group_by_season_year_list, ->(title_list) do
+    select(:title,:season_year).where(title: title_list).group(
+      :title,
+      :season_year,
+    ).order(season_year: :desc)
   end
 
   #今期のアニメのwork_idを取得する

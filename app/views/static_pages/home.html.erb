@@ -1,14 +1,13 @@
 <div class="container" style="width: 960px">
   <%# アラート %>
   <%= render 'layouts/alert' %>
-  <%# ヘッダー%>
-  <%= render "/shared/header" %>
+  
+  <%= render "shared/switch_button" %>
   <%# スライダー %>
   <%= render "/shared/slider" %>
-  <%# ナビゲーション %>
-  <%= render "/shared/navbar" %>
+  
   <%# コンテンツ 今期 %>
-  <%= javascript_pack_tag "home/slider" %>
+  <%# <%= javascript_pack_tag "home/slider" %>
   <%= render "/shared/contents-konki" %>
 
   <%# コンテンツ 管理人のおすすめ%>

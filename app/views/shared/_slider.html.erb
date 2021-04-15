@@ -9,9 +9,9 @@
     </div>
     <% @works.drop(1).each do |work_tags|%>
       <% if !work_tags.facebook_og_image_url.blank? %>
-      <div class="carousel-item">
-        <%= image_tag work_tags.facebook_og_image_url, size: "1000x350", alt: "#{work_tags.title}", class: "img-thumbnail" %>
-      </div>
+        <div class="carousel-item">
+          <%= image_tag work_tags.facebook_og_image_url, size: "1000x350", alt: "#{work_tags.title}", class: "img-thumbnail" %>
+        </div>
       <% end %>
     <% end %>
   </div>
