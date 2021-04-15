@@ -18,6 +18,7 @@ gem 'rmagick'
 gem 'active_decorator'
 gem 'ransack'
 gem 'react-rails'
+gem 'selenium-webdriver'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.3', '>= 6.0.3.4'

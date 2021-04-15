@@ -1,5 +1,4 @@
-<%= javascript_pack_tag "searchs/message" %>
 <%= search_form_for @search, url: search_path do |f| %>
-  <%= f.search_field :title_cont, class: "search",placeholder: "🔍 タイトル、キャラクター", autocomplete: 'off', required: true %>
+  <%= f.search_field :title_cont, class: "search",placeholder: "🔍 作品名", autocomplete: 'off', required: true %>
   <%= f.submit "検索する", class: "btn btn-outline-primary" %>
 <% end %>

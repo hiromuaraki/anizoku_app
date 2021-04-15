@@ -6,7 +6,7 @@
   --color-default: #000;
   --color-accent-1: deepskyblue;
   --color-accent-2: violet;
-  --color-text: #000000;
+  --color-text: #130B06;
 }
 
 // ノーマル時
@@ -15,7 +15,7 @@ body {
   margin: 0;
   padding: 0;
   max-height: 100%;
-  color: var(--color-default);
+  color: var(--color-text);
   .navbar .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
     color: var(--color-default);
   }
@@ -25,17 +25,18 @@ body {
 }
 
 // ダークモードを制御する
-.dark-mode {
-  --color-background: #130B06;
-  --color-default: #f9f9f9;
-  // --color-text:  #130B06;
-  // --color-accent-1: cyan;
-  // --color-accent-2: magenta;
-  .navbar .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
-    color: var(--color-default);
-  }
-  
-}
+// .dark-mode {
+  // --color-background: #130B06;
+  // --color-default: #f9f9f9;
+  // .navbar .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
+    // color: var(--color-default);
+  // }
+  // 
+// }
+
+// .darkmode--activated {
+  // background-color: #130B06;
+// }
 
 .alert {
 	text-align: center;
@@ -103,20 +104,23 @@ body {
   width: 465px;
 }
 
-.dark-border-menu {
-  a:hover {
-    background-color: slategrey;
-  }
-  border-left: solid 15px;
-  border-color: lightgreen;
-  width: 230px;
-}
+// .dark-border-menu {
+  // a:hover {
+    // background-color: slategrey;
+  // }
+  // border-left: solid 15px;
+  // border-color: lightgreen;
+  // width: 230px;
+// }
+
 
 .cut {
 	position: relative;
 	overflow: hidden;	/*不要部分の切り取り*/
-	height: 180px;		/*正方形にしたい高さサイズ*/
-	width: 313px;		/*正方形にしたい横幅サイズ*/
+	// height: 180px;		/*正方形にしたい高さサイズ*/
+	height: 159px;		/*正方形にしたい高さサイズ*/
+	// width: 313px;		/*正方形にしたい横幅サイズ*/
+	width: 303px;		/*正方形にしたい横幅サイズ*/
 	display: block;		/*spanなのでblock要素にする*/
 	margin:0 10px 10px 0;
 }
@@ -124,18 +128,19 @@ body {
 .cut_image {			/*縦・横の画像でも一応見れるように微妙に調整されています。*/
 	display: block;
 	// height: 150px;
-	height: auto;
-  width: 313px;
+	// height: auto;
+	height: 159px;
+  width: 303px;
 	position: absolute;
 	left: -50px;
 	top: -20px;
 }
 
-.slider img {
-  width: 100%;
-  height: 50vw;
-  object-fit: cover;
-}
+// .slider img {
+  // width: 100%;
+  // height: 50vw;
+  // object-fit: cover;
+// }
 
 /*各コンテンツのhover*/
 .swiper-wrapper .swiper-slide:hover {
@@ -205,6 +210,7 @@ input[type=search] {
   width: 500px;
   height: 40px;
   margin-top: 80px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32);
 }
 
 // .tooltip-inner{
