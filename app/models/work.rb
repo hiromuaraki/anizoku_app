@@ -2,22 +2,38 @@ class Work < ApplicationRecord
   #アニメとタグを紐付ける
   has_many :worktags, dependent: :destroy
   has_many :tags, through: :worktags
-
-  YEAR_LIST = 2015..(Time.current.year)
   
   #アニメと声優情報を紐付ける
   has_many :workcasts, dependent: :destroy
   has_many :casts, through: :workcasts
+  
+  #レビュー情報と紐付ける
+  has_many :reviews, dependent: :destroy
+  has_many :users, through: :reviews
+  
+  #アニメとシリーズを紐付ける
+  has_many :work_series, dependent: :destroy
+  has_many :series, through: :work_series
+  
+  #視聴ステータスを紐付ける
+  has_many :watches, dependent: :destroy
+  has_many :users, through: :watches
+  
+  #マイリストを紐づける
+  has_many :mylists,dependent: :destroy
+  has_many :users, through: :mylists
+  
   has_many :characters, dependent: :destroy
-  has_many :series,     dependent: :destroy
   has_many :staffs,     dependent: :destroy
   
+  YEAR_LIST = 2015..(Time.current.year)
+  
   scope :where_array, ->(work_id) { where(id: work_id) }
-
+  
   scope :where_season, ->(season, year) do
     season ? where(season_year: year) : where(season_name_text: year)
   end
-
+  
   #重複しない前方に一致したアニメデータを取得する
   scope :where_search_works, ->(key) do
     where("title LIKE ?", "%#{key}%").order(season_year: :desc)
@@ -31,10 +47,33 @@ class Work < ApplicationRecord
     ).order(season_year: :desc)
   end
 
+  scope :work_id_group_by_season_year_list, ->(work_ids) do
+    select(:title,:season_year, :season_name_text).where(id: work_ids).group(
+      :title,
+      :season_year,
+      :season_name_text
+    ).order(season_name_text: :desc)
+  end
+
+  #必要ん最小限のフィールドのみ取得
+  scope :works_select, ->(work_ids) do
+    select(
+      :id,
+      :facebook_og_image_url,
+      :title,
+      :season_year,
+      :season_name_text,
+      :wikipedia_url,
+      :media_text,
+      :created_at,
+      :updated_at
+    ).where(id: work_ids).order(season_year: :desc, season_name_text: :asc)
+  end
+
   #今期のアニメのwork_idを取得する
-  def self.content_this_term_list
+  def self.content_this_term_list(mode=nil)
     year = self.this_term
-    current_season = self.current_season
+    current_season = mode.nil? ? self.current_season : self.current_season("前期")
     works_ids = where_season(false, year_join_nen(year) + current_season).ids
   end
 
@@ -66,9 +105,9 @@ class Work < ApplicationRecord
     items.uniq!
   end
 
-  #現在の季節を返す
-  def self.current_season
-    current_month = Time.current.month
+  #現在/前期の季節を返す
+  def self.current_season(mode=nil)
+    current_month = mode.nil? ? Time.current.month : Time.current.month - 3
     case current_month
       when 1, 2, 3 then
         current_season = "冬"

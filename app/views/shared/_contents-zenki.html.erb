@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-md-10">
+    <h3 style="color: #FFFFFF" class="content-border"><i class="far fa-check-square"></i>【前期を振り返っちゃう!?】〜前期のアニメ　<%= Time.now.year %>年 <%= Work.current_season("前期") %>〜</h3>
+  </div>
+
+  <div class="col-md-2" style="text-align: right">
+    <h5><%= render partial: "shared/more-watch-modal-zenki", locals: {work_contents_zenki_list: @work_contents_zenki_list, watches_zenki: @watches_zenki } %></h5>
+  </div>
+</div>
+<div class="swiper-container">
+  <div class="swiper-wrapper">
+    <% @work_contents_zenki_list.first(60).each do |work| %>
+        <% if work.facebook_og_image_url.blank? %>
+          <div class="swiper-slide">
+            <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag "no_image.png", alt: "#{work.title}", class: "img-thumbnail", size: "303x159" %></span>
+          </div>
+        <% else %>
+          <div class="swiper-slide">
+            <%= link_to "/works/detail/#{work.id}", data:{"turbolinks"=>false} do %>
+              <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail", size: "303x159" %></span>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+  <%# <div class="swiper-pagination"></div> %>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
+
+</div>

@@ -1,4 +1,3 @@
-
 <div class="container">
   <div class="drawer drawer--left drawer--sidebar">
     <header role="banner">
@@ -6,18 +5,18 @@
         <span class="sr-only">toggle navigation</span>
         <span class="drawer-hamburger-icon"></span>
       </button>
-      <nav class="drawer-nav" role="navigation" style="width: 300px">
-        <ul class="drawer-menu">
+      <nav class="drawer-nav" role="navigation" style="width:280px; background-color: #151515;">
+        <ul class="drawer-menu" style="color: #FFF">
           <p><a class="drawer-brand" href="#"><h2>画像はる！！</h2></a></li>
-          <% if !params[:cast_data][:cast_name].blank? && !@cast.nil? %>
-            <p style="color: #FFFFFF; font-size: 1em;" class="card-text badge rounded-pill bg-info"><i class="fas fa-microphone-alt"></i> 声 優</p><li><h2><i class="fas fa-thumbtack"></i> <%= @cast.name %></h2></li>
+          <% if !params[:cast_name].blank? && !@cast.nil? %>
+            <p style="color: #FFFFFF; font-size: 1.2em;" class="card-text badge rounded-pill bg-info"><i class="fas fa-microphone-alt"></i> 声 優</p><li><h2><%= @cast.name %></h2></li>
             <h4 style="margin-top: 80px"><i class="fas fa-info-circle"></i> 簡単なプロフィール</h4>
-            <li class="drawer-menu-item"><i class="far fa-check-square"></i> 名前: <%= @cast.name %></li>
-            <li class="drawer-menu-item"><i class="far fa-check-square"></i> 名前(かな)：<%= @cast.name_kana %></li>
-            <li class="drawer-menu-item"><i class="far fa-check-square"></i> 性別：<%= @cast.gender %></li>
-            <li class="drawer-menu-item"><i class="far fa-check-square"></i> 血液型：<%= @cast.blood_type.blank? ? "現在準備中🙇‍♂️" : @cast.blood_type.upcase + "型" %></li>
-            <li style="text-decoration: none" class="drawer-menu-item"><i class="far fa-check-square"></i> <%= link_to "公式", @cast.url, target: :_blank %></li>
-            <li style="text-decoration: none" class="drawer-menu-item"><i class="far fa-check-square"></i> <%= link_to "Wikipedia", @cast.wikipedia_url, target: :_blank %></li>            
+            <li style="color: #FFF" class="drawer-menu-item"><i class="far fa-check-square"></i> 名前: <%= @cast.name %></li>
+            <li style="color: #FFF" class="drawer-menu-item"><i class="far fa-check-square"></i> 名前(かな)：<%= @cast.name_kana %></li>
+            <li style="color: #FFF" class="drawer-menu-item"><i class="far fa-check-square"></i> 性別：<%= @cast.gender %></li>
+            <li style="color: #FFF" class="drawer-menu-item"><i class="far fa-check-square"></i> 血液型：<%= @cast.blood_type.blank? ? "現在準備中🙇‍♂️" : @cast.blood_type.upcase + "型" %></li>
+            <li style="text-decoration: none; color: #FFF;" class="drawer-menu-item"><i class="far fa-check-square"></i> <%= link_to "公式", @cast.url, target: :_blank %></li>
+            <li style="text-decoration: none; color: #FFF;" class="drawer-menu-item"><i class="far fa-check-square"></i> <%= link_to "Wikipedia", @cast.wikipedia_url, target: :_blank %></li>            
           <% end %>
         </ul>
       </nav>
@@ -26,27 +25,53 @@
 
     <main role="main" class="drawer-contents">
       <!-- Page content -->
-      <% if !params[:cast_data][:cast_name].blank? && !@works.nil? %>
-        <h1 style="text-align: center"><i class="fas fa-list"></i> 出演作品一覧　作品数(<%= @works.size %>件)</h1>
+      <% if !params[:cast_name].blank? && !@works.nil? %>
+        <h1 style="color: #FFFFFF;"><i class="fas fa-list"></i> 出演作品一覧　作品数(<%= @works.size %>件)</h1>
         <p></p>
         <% @season_list.keys.size.times do |count| %>
-          <h2 style="font-style: italic"><%= @season_list.keys[count] %>年</h2>
-            <div class="row" style="width: 1350px; box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32); border-radius: 8px; border-top: solid 10px #ffeaea;"  >
+          <h1 class="box-title" style="font-style: italic; color: #FFFFFF; font-size: 20px;"><%= @season_list.keys[count] %>年 <%= @season_list.values[count].size%>件</h1>
+            <div class="row" style="box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32); border-radius: 8px;"  >
               <% @works.each_with_index do |work, i| %>
                 <% if @season_list.keys[count] == work.season_year %>
-                  <div class="col-sm-2" style="margin: 18px">
-                    <div class="card" style="width: 250px; height: 270px; display: inline-block; padding: 2px; margin:2px; border-radius: 5px;">
-                      <%= link_to image_tag !work&.facebook_og_image_url.blank? ? work&.facebook_og_image_url : "no_image", alt: "#{work.title}", class: "img-thumbnail" %>
-                      <div class="card-body">
-                        <span class="card-text" style="font-size: 15px"><%= work.title %></span>
+                  <div class="parent" style="width: 140px; margin-left: 5px; background-color: #FFF; margin-top: 10px;">
+                    <p style="font-size: 15px; color: #FFF; margin: 0 auto; text-align: center; background-color: #E60914;"><%= work.season_name_text.slice(-1) %></p>
+                    <div style="width: 140px; height: 70px;">
+                      <div class="mylists">
+                        <%= render partial:"shared/mylists-status-2", locals: {work_id: work.id ,index: i} %>
                       </div>
+                      <%= link_to "/works/detail/#{work.id}" do %>
+                        <% image_tag !work&.facebook_og_image_url.blank? ? work&.facebook_og_image_url : "no_image", alt: "#{work.title}", class: "img-thumbnail img-responsive img-rounded" %>
+                      <% end %>
                     </div>
+                    <div class="dropdown" style="margin-top: 18px;height: 130px;">
+                      <%# 視聴ステータスを配置 これをReactでコンポーネント化する%>
+                      <%= form_with url: "/watches/update", method: :patch, remote: true, id: "status-update#{i}" do |f| %>
+                        <%= hidden_field_tag :work_id, "work_id" %>
+                        <%= hidden_field_tag :watch_status, "status" %>
+                        <%=
+                          f.select :val, 
+                            [
+                              ["見た",    "watched"],
+                              ["見てる",  "watching"],
+                              ["見てない","not_watched"],
+                              ["見たい","want_watch"]
+                            ],{include_blank: "ステータスを選択", selected: !@watches.blank? ? status_type(@watches, work.id) : "ステータスを選択"},{class: "btn btn-block btn-success  dropdown-toggle",id: "select-form-#{i}",required: true, autofocus: "true", data: {work_id: work.id }}
+                        %>
+                      <% end %>
+                      <caption>
+                        <span class="card-text" style="font-size: 13px"><%= work.title.truncate(20) %></span>
+                      </caption>
+                        
+                    </div>
+                      
                   </div>
+                  
                 <% end %>
               <% end %>
             </div>
             <p></p>
         <% end %>
+        <%= javascript_pack_tag 'form/select-status' %>
       <% else %>
         <div style="width: 700px; height: 300px; background: #ffebe9;font-size: 15px; border-left: solid 10px #ff7d6e; margin: 0 auto; border-radius: 13px">
           <div style="margin-top: 100px"><h1 style="padding: 100px"> 該当データがありません</h1></div>

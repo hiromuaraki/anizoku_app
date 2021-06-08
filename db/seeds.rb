@@ -20,10 +20,13 @@ CSV_FILE_WORK_TAG_LIST = "worktagリスト.csv"
 CSV_FILE_WORK_TAG_LIST_DESTROY_BEFORE_LIST = "worktag削除前リスト.csv"
 CSV_FILE_WORK_TAG_LIST_ADD_RELATION = "worktagsに紐づくデータリスト.csv"
 CSV_FILE_WORK_SERIES_LIST = "workの検索結果がnilのデータ.csv"
+CSV_FILE_WORK_ADD_SERIES_LIST = "シリーズとworkのデータを追加すr.csv"
 CSV_FILE_CHARACTER_LIST = "workの検索結果がnilのデータ_キャラクター.csv"
 CSV_FILE_CAST_LIST = "characterの検索結果がnilのデータ_キャスト.csv"
 CSV_FILE_URL_IMAGE_LIST = "danime_imagesのURLデータ一覧とworksの比較.csv"
 CSV_FILE_URL_SCRAPE_LIST = "danimeよりkey_visualを取得.csv"
+CSV_FILE_SCRAPE_DESCRIPTION_LIST = "danimeよりあらすじやキャストデータを一括取得.csv"
+CSV_FILE_SCRAPE_DESCRIPTION_LIST2 = "danimeよりあらすじやキャストデータを一括取得_修正版.csv"
 
 #製作会社ごとのタグデータ
 CSV_FILE_TAG_JC_STAFF = "j.c.staff.csv"
@@ -139,10 +142,10 @@ def get_change_req_url(table: "works", page_no: 1)
 end
 
 #API実行｜jsonデータを配列へ変換し返す（1980年まで入れた）
-def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=2021-autumn\&page=1")
+def request_api(url = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM\&filter_season=2021-autumn\&page=2")
   req_url = URI.parse(url)
   json = Net::HTTP.get(req_url)
-  response = JSON.parse(json)
+  response = JSON.parse("#{json}")
 end
 
 #次のページをリクエストする
@@ -177,13 +180,18 @@ def response_not_nil?(response, req_name)
     response[req_name].each_with_index do |data, index|
       #各モデルを追加する
       case req_name
-      #characterとcastsは「casts」リクエストで行う  
-        when "casts" then add_cast_data(data, null_list)
+        #characterとcastsは「casts」リクエストで行う  
+        when "casts" then
+          add_cast_data(data, null_list)
           # add_character_data(data, null_list) 
-        when "organizations" then add_organization_data(data)
-        when "staffs" then add_staffs_data(data)
-        when "series" then add_series_data(data, null_list)
-        when "works"  then add_work_data
+        when "organizations" then
+          add_organization_data(data)
+        when "staffs" then
+          add_staffs_data(data)
+        when "series" then
+          add_series_data(data, null_list)
+        when "works"  then
+          add_work_data
       end
 
       if index == NEXT_PAGE_NO
@@ -196,11 +204,6 @@ def response_not_nil?(response, req_name)
   end
 
   return true
-end
-
-#モデルからあいまい検索してくる
-def find_by_like_from_model(model_name:, fields:, conditions:)
-  model_name.find_by("#{fields} like ?", "%#{conditions.slice(0..3)}%")
 end
 
 #先頭から4文字抽出した検索結果を配列で取得
@@ -312,36 +315,37 @@ def create_csv_data(model:, columns: nil)
 end
 
 #モデルにないデータを書き出す
-def create_csv_null_list(list_item:, columns: nil, mode: "series")
+def create_csv_null_list(list_item:{}, columns: nil, mode: "series")
   csv_file_path = CSV_FILE_NULL_CREATE_LIST if mode == "tags"
-  # csv_file_path = mode == "series" ? CSV_FILE_WORK_SERIES_LIST : CSV_FILE_CAST_LIST
-  # csv_file_path = mode == "characters" ? CSV_FILE_CHARACTER_LIST : CSV_FILE_CAST_LIST
-  csv_data = CSV.open("db/data/csv/#{csv_file_path}", "w") do |csv|
+  csv_file_path = mode == "series" ? CSV_FILE_WORK_ADD_SERIES_LIST : CSV_FILE_CAST_LIST
+  csv_file_path = mode == "characters" ? CSV_FILE_CHARACTER_LIST : CSV_FILE_CAST_LIST
+
+  csv_data = CSV.open("db/data/csv/#{csv_file_path}", "a") do |csv|
     column_names = %w(work_id cast_id work_title cast_title cast_name) if mode == "workcast"
     column_names = %w(no work_title company_name) if mode == "tags"
-    column_names = %w(id  title) if columns.nil?
+    column_names = %w(work_id series_id work_title series_name) if mode == "series"
+    # column_names = %w(work_id  title) if columns.nil?
     #最初の1行目にカラム設定
-    csv << column_names
+    # csv << column_names
   
     # list_item.each_with_index do |item, i|
       # column_values = [
         # i+1,
         # item,
       # ]
-      # csv << column_valueshは表の行に入る値を定義します。
       # csv << column_values
     # end
-
-    list_item.keys.each_with_index do |item, i|
       column_values = [
-        i+1,
-        list_item,
-        list_item.values
+        list_item[:work_id],
+        list_item[:series_id],
+        list_item[:work_title],
+        list_item[:series_name]
+        
       ]
-      # csv << column_valueshは表の行に入る値を定義します。
       csv << column_values
-    end
+
   end
+  p "csv書き出し終了です！！"
 end
 
 #WEBから画像を取得して保存する
@@ -370,36 +374,21 @@ private
 
 #workIDの存在をチェックし保存を実行する
 def add_series_data(series, null_list)
-  work = Work.find_by(title: series["name"])
-  if !work.nil?
-    create_series(work, series)
-  else
-    null_list << series["name"]
-    create_csv_null_list(list_item: null_list, mode: "series")
-  end
-end
-
-#シリーズのデータを作成する
-def create_series(work, series)
-  Series.find_or_create_by(
-    work_id: work.id,
-    name: series["name"]
-  )
-  puts "シリーズ名：#{series["name"]}"
+  Series.create!(name: series["name"])
+  puts "【追加】シリーズ名：#{series["name"]}"
 end
 
 #キャラクターの追加
 def add_character_data(character, null_list)
   work = Work.find_by(title: character["work"]["title"])
-  puts "作品名：#{work&.title}"
   char =  Character.find_by(name: character["character"]["name"])
   if work.nil?
     null_list << character["work"]["title"]
     create_csv_null_list(list_item: null_list, mode: "characters")
   end
-  if !work.nil?
+  if !work.nil? && char.nil?
     Character.create!(
-      work_id: work.id, 
+      work_id: work.id,
       name: character["character"]["name"],
       nick_name: character["character"]["nickname"],
       birthday: character["character"]["birthday"],
@@ -410,7 +399,7 @@ def add_character_data(character, null_list)
     )
     puts "【追加】ID：#{work.id}/作品名：#{work.title}  キャラクター名：#{character["character"]["name"]}"
   elsif !char.nil?
-    char.update(
+    char.update!(
       name: character["character"]["name"],
       nick_name: character["character"]["nickname"],
       birthday: character["character"]["birthday"],
@@ -445,7 +434,7 @@ def add_cast_data(cast, null_list)
     )
     puts  "【追加】#{character.id}：キャスト：#{cast["person"]["name"]}：タイトル：#{cast["work"]["title"]}：キャラクター:#{cast["character"]["name"]}"
   elsif !cast_data.nil?
-    cast_data.update(
+    cast_data.update!(
       work_title: cast["work"]["title"],
       name: cast["person"]["name"],
       name_kana: cast["person"]["name_kana"],
@@ -520,7 +509,8 @@ def add_work_data
   response = request_api
   data = nil
   response[table_name].each do |work|
-    data = Work.find_by(title: work["title"])
+    #必ず条件を絞り込み検索
+    data = Work.find_by(title: work["title"], season_year: 2021)
     data.nil? ? update_work_data(work) : update_work_data(work, data, "update")
   end
 end
@@ -528,7 +518,7 @@ end
 def update_work_data(work, data=nil, mode="add")
   case mode
     when "add" then
-      Work.create(
+      Work.create!(
         season_name: work["season_name"],
         season_name_text: work["season_name_text"],
         season_year: work["season_name"],
@@ -549,9 +539,8 @@ def update_work_data(work, data=nil, mode="add")
       )
       puts "【追加】作品名：#{work["title"]}/写真URL：#{work["images"]["facebook"]["og_image_url"]}"
     when "update" then
-      data.update(
+      data.update!(
         episodes_count: work["episodes_count"],
-        facebook_og_image_url: work["images"]["facebook"]["og_image_url"],
         released_at: work["released_at"],
         media: work["media"],
         media_text: work["media_text"],
@@ -562,7 +551,7 @@ def update_work_data(work, data=nil, mode="add")
         recommended_image_url: work["images"]["recommended_image_url"].nil? ? "" : work["images"]["recommended_image_url"],
         wikipedia_url: work["wikipedia_url"]
       )
-      puts "【更新】作品名：#{data["title"]}/写真URL：#{work["images"]["facebook"]["og_image_url"]}"
+      puts "【更新】作品名：#{data["title"]}"
   end
 end
 
@@ -701,6 +690,20 @@ def open_csv_model_create(tags = "tags")
       puts "デバッグ#{count}/作品名：#{row["title"]}"
       count += 1
     end
+  elsif tags == "description"
+    CSV.foreach("db/data/csv/#{CSV_FILE_URL_SCRAPE_DESCRIPTION_LIST}", headers: true) do |row|
+      work_data = Work.select(
+        :id,
+        :title,
+        :description,
+        :description_source
+      ).all
+      work_data.find_each do |work|
+        work.update(description: row["description"]) if work.title == row["title"]
+      end
+      puts "【更新】デバッグ#{count}/作品名：#{row["title"]}/あらすじ：#{row["description"]}"
+      count += 1
+    end
   else
     CSV.foreach("db/data/csv/#{CSV_FILE_IMAGE_URL_25BUTAI}", headers: true) do |row|
       DanimeImage.find_or_create_by(
@@ -792,17 +795,6 @@ def search_item
   puts "キャラクター名：#{characters} 声優：#{casts}"
 end
 
-def times_valid
-  items = ["弱キャラ友崎くん", "ホリミヤ", "PUIPUIモルカー"]
-  works = Work.where(title: items)
-  works.size.times do |index|
-    puts "#{index}"
-    works[index].characters.each do |data|
-      puts "デバッグ> キャラクター名：#{data.name}"
-    end
-  end
-end
-
 def valid_group_season_list
   cast_works_list = Cast.where(name: "本渡楓").pluck(:work_title)
   works = Work.select(:title, :season_year).where(title: title_list).group(
@@ -821,8 +813,6 @@ def valid_group_season_list
     :wikipedia_url,
     :media_text
   ).where(title: cast_works_list).order(season_year: :desc)
-
-  binding.pry
 
   season_list.values.each_with_index do |k, i|
     puts season_list.keys[i]
@@ -902,18 +892,133 @@ def execution_scrape
   write_csv(items)
 end
 
-def write_csv(list_item)
-  #検索したタイトルの一覧をcsvファイルへ書き出す
-  csv_data = CSV.open("db/data/csv/#{CSV_FILE_URL_SCRAPE_LIST}", "w") do |csv|
-          
-    column_names = %w(id title url)
-    #最初の1行目にカラム設定
-    csv << column_names
+#あらすじやスタッフ/キャスト情報を一括取得する
+def execution_scrape_description
+  descriiption = "あらすじ"
+  category = "カテゴリー"
+  h1_title = nil
+  un_match = true
+  count = 0
+  chara_count = 0
+  @wait_time = 1
+  @timeout = 1
+  # Seleniumの初期化
+  Selenium::WebDriver.logger.output = File.join("./", "selenium.log")
+  Selenium::WebDriver.logger.level = :warn
+  #seleniumを起動
+  driver = Selenium::WebDriver.for :chrome
+  driver.manage.timeouts.implicit_wait = @timeout
+  wait = Selenium::WebDriver::Wait.new(timeout: @wait_time)
+  # DアニメURLへリクエストする
+  driver.get('https://anime.dmkt-sp.jp/animestore/CF/search_index')
+  # ちゃんと開けているか確認するため、sleepを入れる
+  sleep 2
+  
+  Work.where(description: nil).find_each(start: 4458, finish: 7053) do |work|
+    begin
+      count += 1
+      #検索/ボタン要素を取得
+      search_box = driver.find_element(:id, 'searchKey') # 検索欄
+      search_btn = driver.find_element(:id, 'searchKeySubmit') # 検索ボタン
 
-    list_item.each do |title, image_url|
+      #タイトルを入力
+      search_box.send_keys("#{work.title}")
+      search_btn.click
+
+      #検索結果件数を取得
+      list = driver.find_elements(:css, '.itemModule')
+
+      #要素が複数ある場合はその中から同じタイトルの時のみクリックする
+      if list.size == 0
+        driver.find_element(:id, 'searchKey').clear
+        next
+      end
+
+      title_array = work.title.split("")
+      list.size.times do |i|
+        #取得してきたアニメタイトルの中で7割以上の文字列が一致した時だけクリックする
+        char_data = list[i].find_element(:css, '.line2').text.chars
+        match_title_count = char_data.length * 0.7
+        char_data.each do |c|
+          chara_count += 1 if char_data.include?(c)
+        end
+        if chara_count > match_title_count.round
+          h1_title = list[i].find_element(:css, '.line2').text.strip
+          chara_count = 0
+          list[i].find_element(:css, '.line2').click
+          break
+        else
+          h1_title = list[i].find_element(:css, '.line2').text.strip
+          chara_count = 0
+          un_match = false
+        end
+      end
+      
+      unless un_match
+        driver.find_element(:id, 'searchKey').clear
+        next
+      end
+      
+      if driver.find_elements(:id, 'breadCrumb_d').size != 0
+        h1_title = driver.find_element(:id, 'breadCrumb_d').text.strip
+      end
+      
+      #あらすじ/カテゴリ/コピーライトの取得
+      descriiption = driver.find_elements(:css, '.outlineContainer')[0].find_element(:tag_name, 'p').text.strip
+      driver.find_elements(:css, '.footerLink').size.times do |i|
+        category = driver.find_elements(:css, '.footerLink')[i].find_element(:tag_name, 'a').text.strip
+      end
+      #キャスト/スタッフ/制作年/コピーライトを取得する
+      temp_data = driver.find_elements(:css, '.castContainer')[0]&.text
+      if !temp_data.nil?
+        cast_data = temp_data.split(/\R/)
+        p "デバッグ#{count} ID：#{work.id} タイトル：#{work.title}"
+        p "デバッグ#{count}【取得しました〜】 ID：#{work.id} タイトル：#{work.title}"
+      
+        write_csv({work_id: work.id, title: work.title.strip, description: descriiption, category: category, cast_data: cast_data}, "description" ,count)
+      end
+      
+      #再度検索フォームへ遷移する
+      driver.navigate.to('https://anime.dmkt-sp.jp/animestore/CF/search_index')
+    
+    rescue Selenium::WebDriver::Error::NoSuchElementError
+      p 'no such element error!!'
+      p "エラー/#{count}回目 ID；#{work.id}/タイトル：#{work.title}"
+      return
+    end
+  end
+
+  driver.quit
+  p "ループ終了！！ ループ回数：#{count}回"
+  p "csvへ書き出します〜"
+end
+
+def write_csv(list_item={}, mode="iamge_url", count)
+  #検索したタイトルの一覧をcsvファイルへ書き出す
+  csv_data = CSV.open("db/data/csv/#{CSV_FILE_SCRAPE_DESCRIPTION_LIST2}", "a") do |csv|
+          
+    column_names = %w(id title url) if mode == "image_url"
+    column_names = %w(id title description category cast_data) if mode == "description"
+    #最初の1行目にカラム設定
+    csv << column_names if count == 1
+
+    if mode == nil
+      list_item.each do |title, image_url|
+        column_values = [
+          title,
+          image_url
+        ]
+        csv << column_values
+      end
+    end
+
+    1.times do |i|
       column_values = [
-        title,
-        image_url
+        list_item[:work_id],
+        list_item[:title],
+        list_item[:description],
+        list_item[:category],
+        list_item[:cast_data]
       ]
       csv << column_values
     end
@@ -921,15 +1026,72 @@ def write_csv(list_item)
 end
 
 
+#スタッフ/キャストデータを文字列から配列へ変換し、worksへ保存する
+def description_source_split
+  count = 1
+  #[]を削除し、句読点ごとに配列へ返還する
+  CSV.foreach("db/data/csv/#{CSV_FILE_SCRAPE_DESCRIPTION_LIST2}", headers: true) do |row|
+    cast_data = row["cast_data"].delete("[]").split(",")
+    work_data = Work.select(
+      :id,
+      :title,
+      :description,
+      :description_source
+    ).where(description: nil)
+    work_data.find_each do |work|
+      work.update(description: row["description"], description_source: cast_data[6]) if work.title == row["title"]
+    end
+    puts "デバッグ#{count}/作品名：#{row["title"]}/ カテゴリ：#{row["category"]}/コピーライト： #{cast_data[6]}"
+    count += 1
+  end
+end
+
+def add_relation_works_series
+  #シリーズ全件数分回す
+  series = nil
+  work_list = Hash.new
+  series_list = Hash.new
+  count = 1
+  Work.find_each do |work|
+    work_title = work.title.gsub("劇場版", "")
+    series = Series.select(:id, :name).find_by("name LIKE ?", "#{work_title.slice(0, 5)}%")
+    next if series.nil?
+    
+    # work_list[work.id] = work.title
+    # series_list[series.id] = series.name
+    p "デバッグ#{count} / ID：#{series.id} /　シリーズ名：#{series.name}  /タイトル：#{work.title}"
+    create_csv_null_list(list_item: {work_id: work.id, series_id: series.id, work_title: work.title, series_name: series.name}, columns: "", mode: "series")
+    count += 1
+  end
+  p "ループ終了"
+  # create_csv_null_list(list_item: {work: work_list, series: series_list}, columns: "", mode: "series")
+  # p "csvへ書き出します！！
+end
+
+#アニメとシリーズを紐付ける
+def add_work_series_data
+  count = 1
+  CSV.foreach("db/data/csv/#{CSV_FILE_CAST_LIST}", headers: true) do |row|
+    WorkSeries.create!(
+      work_id: row["work_id"],
+      series_id: row["series_id"]
+    )
+    puts "デバッグ#{count} タイトル:#{row["work_title"]}：シリーズ名：#{row["series_name"]}"
+    count += 1
+  end
+end
+
+# add_relation_works_series
+add_work_series_data
 
 #アニメを追加
 # add_work_data
 
 #モデルをAPIを実行し追加（mainメソッド）
-# common_add_model_data(name: "staffs")
+# common_add_model_data(name: "series")
 
 #csvファイルのdanimeのimageデータをモデルへ追加　or タグデータ追加
-# open_csv_model_create("wikilists")
+# open_csv_model_create("description")
 
 #tagsやdanimesのデータを引数によって追加
 # open_csv_model_create
@@ -973,4 +1135,9 @@ end
 #スクレイピング実行プログラム（key_visualを取得しwork: facebook_og_image_urlを一括更新する）
 # execution_scrape
 
-valid_group_season_list
+#あらすじ/コピーライト/キャストデータを一括取得
+# execution_scrape_description
+
+# valid_group_season_list
+
+# description_source_split

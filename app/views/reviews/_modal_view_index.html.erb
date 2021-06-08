@@ -1,0 +1,68 @@
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="background-color: #130B06">
+              <div class="modal-header" style="background-color: #EEEEEE;">
+                <h5 style="color: #000" class="modal-title" id="exampleModalLabel"><i class="far fa-star"></i> みんなの評価</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+                <div class="modal-body">
+
+                  <div class="row kokuban">
+                    <div class="col-md-12">
+                      <% other_reviews.each_with_index do |other_review, i|%>
+                        <div style="margin-left: 10px;" class="media media-top">
+                          <%= image_tag "twitter_hiromu.jpeg",{class: "rounded-circle border-primary", size: "64x64"} %>
+                          <div class="" style="margin-left: 20px; font-size: 20px; margin-top: 20px;"><p><%="#{other_review.user.name}さんの評価"%></p></div>
+                        </div>
+
+                        <div class="media-body">
+                          <h4 style="text-align: right; color: #FFF;"><span class="badge rounded-pill bg-primary bg-lg" style="font-size: 1em; color: #FFF;"></span>
+                            <% if other_review.other_review_synthsesis_rate(other_review.rate) == "とても良い" %>
+                              <span class="badge rounded-pill bg-primary bg-lg" style="font-size: 1em; color: #FFF;"><i class="far fa-heart"></i> <%= other_review.other_review_synthsesis_rate(other_review.rate) %></span>
+                            <% elsif other_review.other_review_synthsesis_rate(other_review.rate) == "良い" %>
+                              <span class="badge rounded-pill bg-success bg-lg" style="font-size: 1em; color: #FFF;"><i class="fas fa-thumbs-up"></i> <%= other_review.other_review_synthsesis_rate(other_review.rate) %></span>
+                            <% elsif other_review.other_review_synthsesis_rate(other_review.rate) == "普通" %>
+                              <span class="badge rounded-pill bg-lg" style="font-size: 1em; color: #FFF; background-color: #EB5529;"><i class="far fa-smile"></i> <%= other_review.other_review_synthsesis_rate(other_review.rate) %></span>
+                            <% else %>
+                              <span class="badge rounded-pill bg-secondary bg-lg" style="font-size: 1em; color: #FFF;"><i class="fas fa-sad-tear"></i> <%= other_reviews.other_review_synthsesis_rate(other_review.rate) %></span>
+                            <% end %>
+                          </h4>
+                          </div>
+                        
+                          <span style="margin-left: 15px;" class="point">評価</span><p></p>
+                          <div style="font-size: 13px;" class="col-md-9 kanso-border">
+                            <% other_review.review_other_user_items(@work.id, other_review.user.id).each_with_index do |rate, cnt|%>
+                              <span style="display: inline-block; padding: 1px;"><%= other_review.review_select_list[cnt] %></span>
+                              <% if rate == "とても良い" %>
+                                <p  class="badge rounded-pill bg-primary bg-lg" style="width: 90px; font-size: 13px"><%= rate %></p>
+                              <% elsif rate == "良い" %>
+                                <p class="badge rounded-pill bg-success bg-lg" style="width: 90px; font-size: 13px"><%= rate %></p>
+                              <% elsif rate == "普通" %>
+                                <p class="badge rounded-pill bg-lg" style="width: 90px; background-color: #EB5529; font-size: 13px;"><%= rate %></p>
+                              <% else %>
+                                <p class="badge rounded-pill bg-secondary bg-lg" style="width: 90px; background-color: #EB5529; font-size: 13px;"><%= rate %></p>
+                              <% end %>
+                            <% end %>
+                          </div>
+                          
+                          <div class="col-md-9">
+                            <span class="point">感想</span><p></p>
+                            <p class="kanso-border"><%= other_review.content.blank? ? "感想はまだありません。" : other_review.content %></p>
+                          </div>
+                          <hr style="text-decoration:underline wavy #EB5529">
+                          <p></p>
+                        <% end %>
+                      </div>
+                    </div>
+                </div>
+
+                  <div class="modal-footer" style="background-color: #EEEEEE;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                  </div>
+            
+          </div>
+        
+        <%# 呼び出し元の締めタグ %>
+        </div>

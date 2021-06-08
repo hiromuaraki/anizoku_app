@@ -1,0 +1,2 @@
+jQuery(`#mylists-${<%= @work %>}`).html("<%= j(render partial: "shared/mylists-status-2", locals: {work_id: @work}) %>");
+history.replaceState('','','');

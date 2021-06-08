@@ -1,14 +1,16 @@
+
 <div class="container" style="width: 960px">
-  <%# アラート %>
-  <%= render 'layouts/alert' %>
-  
+  <%= render "layouts/alert" %>
   <%= render "shared/switch_button" %>
+  
   <%# スライダー %>
   <%= render "/shared/slider" %>
   
   <%# コンテンツ 今期 %>
-  <%# <%= javascript_pack_tag "home/slider" %>
   <%= render "/shared/contents-konki" %>
+
+  <%# コンテンツ　前期 %>
+  <%= render "/shared/contents-zenki" %>
 
   <%# コンテンツ 管理人のおすすめ%>
   <%= render "/shared/contents-recomended" %>
@@ -18,8 +20,18 @@
   
   <%# コンテンツ 現実逃避したい%>
   <%= render "/shared/contents-real-escape" %>
+
+  <%# コンテンツ 現実逃避したい%>
+  <%= render "/shared/contents-everyone-recommended" %>
+
+  <%# コンテンツ 異世界転生 %>
+  <%= render "/shared/contents-another-world-tensei" %>
+
+  <%# コンテンツ なろう %>
+  <%= render "/shared/contents-narou" %>
   
   <%# タグ一覧 %>
   <%= render "/shared/tags" %>
+  
 </div>
 

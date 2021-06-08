@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="col-md-10">
+    <h3 style="color: #FFFFFF"><i class="far fa-check-square"></i>【気になる作品がある!?】〜みんなのおすすめ〜</h3>
+  </div>
+  <div class="col-md-2" style="text-align: right">
+    <h5><%= render partial: "shared/more-watch-modal-everyone-recomended", locals: {every_recomended: @every_recomended, watches_everyone_recomended: @watches_everyone_recomended} %></h5>
+  </div>
+</div>
+
+<div class="swiper-container">
+  <div class="swiper-wrapper">
+    <% @every_recomended.each do |work| %>
+        <% if !work.facebook_og_image_url.blank? %>
+        <%# アニメ画像のリクエストURLがある時だけ %>
+          <% if work.url_exist?(work.facebook_og_image_url) != "404" && work.url_exist?(work.facebook_og_image_url) != "500" %>
+            <div class="swiper-slide">
+              <%= link_to "/works/detail/#{work.id}", data:{"turbolinks"=>false} do %>
+                <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail" %></span>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+    <% end %>
+  </div>
+
+  <%# <div class="swiper-pagination"></div> %>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
+
+</div>

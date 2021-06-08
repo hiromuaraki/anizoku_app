@@ -1,0 +1,74 @@
+<div class="card" style="width: 1165px; color: #FFF; border: 2px groove #FFF; background-color: rgb(0,0,0.5,0.5);">
+  <%# <img class="card-img-top" src=".../100px1200/?text=Image cap" alt="Card image cap"> %>
+  <span style="text-align: right; font-size: 20px; margin-top: 10px;">サービス開始日: <%= current_user.created_at.to_date %><span style="font-size: 20px;">(<%= (Time.current.day - current_user.created_at.to_date.day) %>日)</span></span>
+  <div class="media" style="margin-left: 10px">
+    <%= image_tag "twitter_hiromu.jpeg",{class: "rounded-circle", size: "120x120"} %>
+    <div class="media-body" style="margin-top: 50px">
+      <button style="border-radius: 30px; margin-left: 330px; width: 70px;" type="button" class="btn btn-outline-primary">変更</button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div style="background-color: #091421; height: 300px;">
+      <span class="card-title mt-0" style="font-size: 30px"><%= current_user.name %></span>
+        <div class="form-group" style="margin-top: 30px; margin-bottom: 30px;">
+          <div class="row">
+            <div class="col-md-6">
+              <textarea style="width: 500px" class="form-control" id="exampleFormControlTextarea1" rows="6" cols="10" readonly="true" maxlength="140"></textarea>
+            </div>
+
+            <p></p>
+            <div class="col-md-6">
+              <%# まだ保留 %>
+
+            </div>
+
+          </div>  
+
+        </div>
+      </div>
+
+    <h3 style="margin-top: 50px"><span style="color: #FFF"><i class="fas fa-list"></i></span>  レコード</h3>
+    <div style="color: #FFF; overflow: scroll; height: 200px; margin-left: 3px; padding: 10px; font-weight: bold;" class="list-group-flush">
+      <span style="font-size: 20px; margin-left: 20px;"> ウォッチリスト</span>
+      <span style="font-size: 20px; margin-left: 200px;"><%= watches_total_count %></span>
+      <p></p>
+      <p class="ele-border"></p>
+      <span style="font-size: 20px; margin-left: 20px;">マイリスト数</span>
+      <span style="font-size: 20px; margin-left: 240px;"><%= mylists_total_count %></span>
+      <p></p>
+      <p class="ele-border"></p>
+      <span style="font-size: 20px; margin-left: 20px;"> レビュー数</span>
+      <span style="font-size: 20px; margin-left: 260px;"><%= review_total_count %></span>
+      <p></p>
+      <p class="ele-border"></p>
+      <span style="font-size: 20px; margin-left: 20px;"> 今期みてるアニメ数</span>
+      <span style="font-size: 20px; margin-left: 260px;"><%= watch_count %></span>
+      <p></p>
+      <p class="ele-border"></p>
+      <span style="font-size: 20px; margin-left: 20px;"> 前期みたアニメ数</span>
+      <span style="font-size: 20px; margin-left: 260px;"><%= watch_count("前期") %></span>
+      <p></p>
+      <p class="ele-border"></p>
+    </div>
+
+    <p></p>
+    <h3 style="margin-top: 50px"><span style="color: #FFF"><i class="fas fa-tag"></i></span> ステータス</h3>
+    <div style="color: #FFF; overflow: scroll; height: 150px; margin-left: 3px; padding: 10px; font-weight: bold;" class="list-group-flush">
+      <span style="margin-left: 20px; font-size: 20px;"> 部員No</span>
+      <span style="font-size: 20px; margin-left: 293px;"><%= current_user.id %></span>
+      <p></p>
+      <p class="ele-border"></p>
+      <span style="font-size: 20px; margin-left: 20px;">あにLV</span>
+      <span style="font-size: 20px; margin-left: 295px;">XXX</span>
+      <p></p>
+      <p class="ele-border"></p>
+    </div>
+    
+  </div>
+
+  
+    <%# <a href="#" class="card-link">Card link</a> %>
+    <%# <a href="#" class="card-link">Another link</a> %>
+  
+</div>

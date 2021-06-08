@@ -1,0 +1,52 @@
+<div class="container">
+  <h1 style="color: #FFF; margin-bottom: 30px;">マイページ</h1>
+  <ul class="nav nav-pills nav-tabs mb-3 border-menu shadow-lg p-3 mb-5 bg-white rounded" id="pills-tab" role="tablist" style="font-size: 17px; background-color: #FFF; width: 1165px; padding: 5px;">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link a-link konki-list" id="pills-konki-list-tab" data-bs-toggle="pill" href="#pills-konki-list" data-toggle="tab" role="tab" aria-controls="pills-konki-list" aria-selected="false"><i class="far fa-check-circle"></i> 今期リスト <span class="badge rounded-pill bg-dark" style="color: #FFF"><%= konki_total_count  %></a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link a-link zenki-list" id="pills-zenki-list-tab" data-bs-toggle="pill" href="#pills-zenki-list" data-toggle="tab" role="tab" aria-controls="pills-zenki-list" aria-selected="false"><i class="fas fa-backward"></i> 前期リスト <span class="badge rounded-pill bg-dark" style="color: #FFF"><%= zenki_total_count %></a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active a-link" id="pills-watch-tab" data-bs-toggle="pill" href="#pills-watch" data-toggle="tab" role="tab" aria-controls="pills-watch" aria-selected="true"><i class="fas fa-list"></i> ウォッチリスト <span class="badge rounded-pill bg-dark" style="color: #FFF"><%= watches_total_count%></a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link a-link my-list" id="pills-my-list-tab" data-bs-toggle="pill" href="#pills-my-list" data-toggle="tab" role="tab" aria-controls="pills-my-list" aria-selected="false"><i class="far fa-star"></i> マイリスト <span class="badge rounded-pill bg-dark" style="color: #FFF"><%= mylists_total_count %></a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link a-link" id="pills-review-tab" data-bs-toggle="pill" href="#pills-review" data-toggle="tab" role="tab" aria-controls="pills-review" aria-selected="false"><i class="fas fa-pencil-alt"></i> レビュー一覧 <span class="badge rounded-pill bg-dark" style="color: #FFF"> <%= review_total_count %><span></a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link a-link" id="pills-profile-tab" data-bs-toggle="pill" href="#pills-profile" data-toggle="tab" role="tab" aria-controls="pills-profile" aria-selected="false"><i class="far fa-user"></i> プロフィール</a>
+    </li>
+  </ul>
+
+    <p></p>
+  <div style="color: #FFF" class="tab-content" id="pills-tabContent">
+    <%# 今期アニメ %>
+    <div class="tab-pane fade" id="pills-konki-list" role="tabpanel" aria-labelledby="pills-konki-list-tab">
+       <%= render partial: "users/konki_list" %>
+    </div>
+    <%# 前期アニメ %>
+    <div class="tab-pane fade" id="pills-zenki-list" role="tabpanel" aria-labelledby="pills-zenki-list-tab">
+       <%= render partial: "users/zenki_list" %>
+    </div>
+    <%# ウォッチリスト %>
+    <div class="tab-pane fade show active" id="pills-watch" role="tabpanel" aria-labelledby="pills-watch-tab">
+      <%= render partial: "watches/watch_list" %>
+    </div>
+    <%# マイリスト %>
+    <div class="tab-pane fade" id="pills-my-list" role="tabpanel" aria-labelledby="pills-my-list-tab">
+       <%= render partial: "mylists/my-list" %>
+    </div>
+    <%# レビュー一覧 %>
+    <div class="tab-pane fade" id="pills-review" role="tabpanel" aria-labelledby="pills-review-tab">
+      <%= render partial: "reviews/review-list" %>
+    </div>
+    <%# プロフィール %>
+    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+      <%= render "users/profile" %>
+    </div>
+  </div>
+  
+</div>

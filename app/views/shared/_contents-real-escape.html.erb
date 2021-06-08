@@ -1,9 +1,9 @@
 <div class="row">
   <div class="col-md-10">
-    <h3><i class="far fa-check-square"></i>【リアルはクソゲーだ!!】現実逃避したい時に見たい</h3>
+    <h3 style="color: #FFFFFF"><i class="far fa-check-square"></i>【リアルはクソゲーだ!!】〜現実逃避したい時に見たい〜</h3>
   </div>
   <div class="col-md-2" style="text-align: right">
-    <h5><%= link_to "もっと見る" %></h5>
+    <h5><%= render partial: "shared/more-watch-modal-real-escape", locals: {works_real_escape: @works_real_escape, watches_real_escape: @watches_real_escape} %></h5>
   </div>
 </div>
 
@@ -14,7 +14,9 @@
         <%# アニメ画像のリクエストURLがある時だけ %>
           <% if work.url_exist?(work.facebook_og_image_url) != "404" && work.url_exist?(work.facebook_og_image_url) != "500" %>
             <div class="swiper-slide">
-              <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail" %></span>
+              <%= link_to "/works/detail/#{work.id}", data:{"turbolinks"=>false} do %>
+                <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail" %></span>
+              <% end %>
             </div>
           <% end %>
         <% end %>

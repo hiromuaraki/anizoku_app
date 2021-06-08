@@ -1,0 +1,28 @@
+<ul class="nav nav-pills nav-tabs mb-3 justify-content-center border-menu shadow-lg p-3 mb-5 bg-white rounded" id="pills-tab" role="tablist" style="font-size: 18px; background-color: #FFF; margin-top: 30px; width: 1165px; padding: 10px;">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link active watch-list a-link" id="pills-watched-tab" data-bs-toggle="pill" href="#pills-watched" data-toggle="tab" role="tab" aria-controls="pills-watched" aria-selected="true"><i class="far fa-check-circle"></i> 見た <span style="color: #FFF; font-size: 15px;" class="badge rounded-pill bg-dark"><%=@works.size%>件</span></a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link watch-list a-link" id="pills-watching-tab" data-bs-toggle="pill" href="#pills-watching" data-toggle="tab" role="tab" aria-controls="pills-watching" aria-selected="false"><i class="far fa-play-circle"></i> 見てる <span style="color: #FFF; font-size: 15px;" class="badge rounded-pill bg-dark"><%=@watching.size%>件</span></a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link watch-list a-link" id="pills-not-watched-tab" data-bs-toggle="pill" href="#pills-not-watched" data-toggle="tab" role="tab" aria-controls="pills-not-watched" aria-selected="false"><i class="fas fa-minus-circle"></i> 見てない <span style="color: #FFF; font-size: 15px;" class="badge rounded-pill bg-dark"><%=@not_watched.size%>件</span></a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link watch-list a-link" id="pills-want-watch-tab" data-bs-toggle="pill" href="#pills-want-watch" data-toggle="tab" role="tab" aria-controls="pills-want-watch" aria-selected="false"><i class="fas fa-plus-circle"></i> 見たい <span style="color: #FFF; font-size: 15px;" class="badge rounded-pill bg-dark"><%=@want_watch.size%>件</span></a>
+  </li>
+</ul>
+<div style="color: #FFF" class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade show active a-link" id="pills-watched" role="tabpanel" aria-labelledby="pills-watched-tab">
+    <%= render "watches/watched" %>
+  </div>
+  <div class="tab-pane fade a-link" id="pills-watching" role="tabpanel" aria-labelledby="pills-watching-tab">
+    <%= render "watches/watching"%>
+  </div>
+  <div class="tab-pane fade a-link" id="pills-not-watched" role="tabpanel" aria-labelledby="pills-not-watched-tab">
+    <%= render "watches/not-watched"%>
+  </div>
+  <div class="tab-pane fade a-link" id="pills-want-watch" role="tabpanel" aria-labelledby="pills-want-watch-tab">
+    <%= render "watches/want-watch"%>
+  </div>
+</div>

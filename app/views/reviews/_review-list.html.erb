@@ -1,0 +1,28 @@
+<ul class="nav nav-pills nav-tabs mb-3 justify-content-center border-menu shadow-lg p-3 mb-5 bg-white rounded" id="pills-tab" role="tablist" style="font-size: 18px; background-color: #FFF; margin-top: 30px; width: 1165px; padding: 10px;">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link review-list active a-link" id="pills-very-good-tab" data-bs-toggle="pill" href="#pills-very-good" data-toggle="tab" role="tab" aria-controls="pills-very-good" aria-selected="true"><i class="far fa-heart"></i> とても良い <span style="color: #FFF; font-size: 15px;" class="badge rounded-pill bg-dark"><%= review_default_count(0) %>件</span></a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link review-list a-link" id="pills-good-tab" data-bs-toggle="pill" href="#pills-good" data-toggle="tab" role="tab" aria-controls="pills-good" aria-selected="false"><i class="fas fa-thumbs-up"></i> 良い <span style="color: #FFF; font-size: 15px;" class="badge rounded-pill bg-dark"><%= review_default_count(1) %>件</span></a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link review-list a-link" id="pills-normal-tab" data-bs-toggle="pill" href="#pills-normal" data-toggle="tab" role="tab" aria-controls="pills-normal" aria-selected="false"><i class="far fa-smile"></i> 普通 <span style="color: #FFF; font-size: 15px;" class="badge rounded-pill bg-dark"><%=review_default_count(2) %>件</span></a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link review-list a-link" id="pills-bad-tab" data-bs-toggle="pill" href="#pills-bad" data-toggle="tab" role="tab" aria-controls="pills-bad" aria-selected="false"><i class="far fa-sad-tear"></i> 良くない <span style="color: #FFF; font-size: 15px;" class="badge rounded-pill bg-dark"><%= review_default_count(3) %>件</span></a>
+  </li>
+</ul>
+<div style="color: #FFF" class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade show active a-link" id="pills-very-good" role="tabpanel" aria-labelledby="pills-very-good-tab">
+    <%= render partial: "reviews/very-good" %>
+  </div>
+  <div class="tab-pane fade a-link" id="pills-good" role="tabpanel" aria-labelledby="pills-good-tab">
+    <%= render partial: "reviews/good" %>
+  </div>
+  <div class="tab-pane fade a-link" id="pills-normal" role="tabpanel" aria-labelledby="pills-normal-tab">
+    <%= render partial: "reviews/normal" %>
+  </div>
+  <div class="tab-pane fade a-link" id="pills-bad" role="tabpanel" aria-labelledby="pills-bad-tab">
+    <%= render partial: "reviews/bad" %>
+  </div>
+</div>

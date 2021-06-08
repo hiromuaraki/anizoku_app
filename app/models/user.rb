@@ -1,8 +1,20 @@
 class User < ApplicationRecord
   #ユーザーのトークンを一時的に保存する
   attr_accessor :remember_token
-
   VALID_EMAIL_RAGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+
+  #レビュー情報を紐づける
+  has_many :reviews, dependent: :destroy
+  has_many :works, through: :reviews
+
+  #視聴ステータスを紐付ける
+  has_many :watches, dependent: :destroy
+  has_many :works, through: :watches
+
+  #マイリストを紐付ける
+  has_many :mylists, dependent: :destroy
+  has_many :works, through: :mylists
+  
   has_one :user_profile, dependent: :destroy
   #user_profileに直接アクセスできるようにする
   delegate :user_id, :nick_name, :image, :word, to: :user_profile

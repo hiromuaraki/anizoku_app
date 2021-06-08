@@ -117,6 +117,71 @@ class Tag < ApplicationRecord
       harrem: 55,
       #勉強
       study: 56,
+      #神作画
+      god_drawing: 57,
+      #戦術/戦略
+      tactics: 58,
+      #セリフがグッとくる
+      dialogue: 59,
+      #人気声優
+      popular_voice_actor: 60,
+      #魔法少女
+      magical_girl: 61,
+      #名曲
+      master_piece_song: 62,
+      #ネタ枠
+      neta: 63
+      
+    }
+    
+  end
+
+  def production_company
+    #製作会社
+    production_company = {
+      #J.C.STAFF
+      jc_staff: 64,
+      #A-1 Pictures
+      a_1_pictures: 65,
+      #SHAFT
+      shaft: 66,
+      #P.A.WORKS
+      pa_works: 67,
+      #mappa
+      mappa: 68,
+      #京都アニメーション
+      kyoto_anime: 69,
+      #ボンズ
+      bonzu: 70,
+      #ufotable
+      ufotable: 71,
+      #CloverWorks
+      clover_works: 72,
+      #feel.
+      feel: 73,
+      #動画工房
+      douga_koubou: 74,
+      #WIT STUDIO
+      wit_studio: 75,
+      #サンライズ
+      sunrise: 76,
+      #マッドハウス
+      madhouse: 77,
+      #トリガー
+      torigger: 78,
+      #SILVER LINK.
+      sliver_link: 79,
+      #スタジオディーン
+      studio_deen: 80,
+      #スタジオジブリ
+      jiburi: 81,
+      #project No.9
+      project_no9: 82,
+      #WHITE FOX
+      white_fox: 83,
+      #プロダクションI.G
+      production_ig: 83
+
     }
   end
 

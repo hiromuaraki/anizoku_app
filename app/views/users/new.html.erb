@@ -1,16 +1,16 @@
 <div class="container">
   <div class="mx-auto" style="width: 600px; margin-top: 200px">
     <% if @user.errors.any? %>
-    <div class="alert alert-danger" role="alert">
-      <ul style="list-style: none; text-align: center">
-        <% @user.errors.full_messages.each do |message| %>
-          <li>
-            <%= message %>
-          </li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+      <div class="alert alert-danger" role="alert">
+        <ul style="list-style: none; text-align: center">
+          <% @user.errors.full_messages.each do |message| %>
+            <li>
+              <%= message %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
     <h1 class="center">入部登録フォーム🎉</h1>
     <%= form_with url: users_path ,local: true do |f|%>
       <%= f.label :name, "Name" %>

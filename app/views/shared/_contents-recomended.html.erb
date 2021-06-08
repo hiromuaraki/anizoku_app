@@ -1,9 +1,9 @@
 <div class="row">
   <div class="col-md-8">
-    <h3><i class="far fa-check-square"></i>【絶対見るべき!!】管理人のおすすめ</h3>
+    <h3 style="color: #FFFFFF"><i class="far fa-check-square"></i>【絶対見るべき!!】〜管理人のおすすめ〜</h3>
   </div>
   <div class="col-md-4" style="text-align: right">
-    <h5><%= link_to "もっと見る" %></h5>
+    <h5><%= render partial: "shared/more-watch-modal-recomended", locals: {works_recomended: @works_recomended, watches_recomended: @watches_recomended} %></h5>
   </div>
 </div>
 <div class="swiper-container">
@@ -15,7 +15,9 @@
           </div>
         <% else %>
           <div class="swiper-slide">
-            <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url.blank? ? work.image_thumbnail : work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail", size: "303x159" %></span>
+            <%= link_to "/works/detail/#{work.id}", data:{"turbolinks"=>false} do %>
+              <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url.blank? ? work.image_thumbnail : work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail", size: "303x159" %></span>
+            <% end %>
           </div>
         <% end %>
       <% end %>

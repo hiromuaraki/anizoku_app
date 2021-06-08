@@ -1,0 +1,56 @@
+<div class="row">
+  <div id="normal-list" class="ele-left">
+    <h1 class="badge rounded-pill bg-lg" style="width: 220px; font-size: 2em; color: #FFF; margin-top: 20px; background-color: #EB5529;"><i class="far fa-smile"></i> 普通</h1>
+    <% if !@review_works.blank?%>
+      <% @review_season_list.keys.size.times do |count| %>
+        <h3 style="font-style: italic; color: #FFFFFF; margin-top: 20px; margin-bottom: 40px;"><span style="font-size: 20px" class="box-title"><%= "#{@review_season_list.keys[count]}年"%> <%= "(#{@review_season_list.values[count].size}件)" %><span></h3>
+          <div class="row" style="box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32); border-radius: 2px; width: 1200px;">
+            <% @review_works.each_with_index do |work, i| %>
+              <% if @review_season_list.keys[count] == work.season_year %>
+                <div style="margin-left: 5px">
+                  <div style="background-color: #FFF;">
+                    <div class="card mb-4" style="max-width: 580px; height: 260px;">
+                      <span style="font-size: 15px; color: #000; background-color: #FEDF53; margin-left: 2px;"><%= work.title %></span>
+                      <div class="row no-gutters">
+                        <div class="col-md-4">
+                          <p style="font-size: 15px; color: #FFF; margin: 0 auto; text-align: center; color: #FFF; background-color:#E60914;">レビュー日 <%= "(#{work.created_at.to_date})" %></p>
+                          <%= link_to "/works/detail/#{work.id}" do %>
+                           <% image_tag !work&.facebook_og_image_url.blank? ? work&.facebook_og_image_url : "no_image", alt: "#{work.title}", class: "img-thumbnail img-responsive img-rounded" %>
+                          <% end %>
+                          <span class="badge rounded-pill bg-primary bg-lg" style="font-size: 15px; color: #000; margin-left: 10px; color: #FFF; margin-top: 5px;"><%= work.season_name_text %></span>
+                          <span class="badge rounded-pill bg-primary bg-lg" style="font-size: 15px; color: #000; margin-left: 10px; color: #FFF; margin-top: 5px;"><%= work.media_text %></span>
+                          
+                        </div>
+                        <div class="col-md-8">
+                          <div class="card-body" style="border: double 5px">
+                              <div style="width: 250px; font-size: 13px;">
+                                <%# <p class="card-text"><small class="text-muted"></small><p> %>
+                                <% user_rate(work.id).each_with_index do |rate, cnt| %>
+                                  <p style="display: inline-block; width: 120px;"><i class="far fa-check-square"></i> <%= user_select_list[cnt] %></p>
+                                  <% if rate == "とても良い" %>
+                                    <p class="badge rounded-pill bg-primary bg-lg" style="width: 100px; font-size: 13px; color: #FFF"><i class="far fa-heart"></i><%= rate %></p>
+                                  <% elsif rate == "良い" %>
+                                    <p class="badge rounded-pill bg-success bg-lg" style="width: 100px; font-size: 13px; color: #FFF"><i class="fas fa-thumbs-up"></i><%= rate %></p>
+                                  <% elsif rate == "普通" %>
+                                    <p class="badge rounded-pill bg-lg" style="width: 100px; background-color: #EB5529; font-size: 13px; color: #FFF;"><i class="far fa-smile"></i><%= rate %></p>
+                                  <% else %>
+                                    <p class="badge rounded-pill bg-secondary bg-lg" style="width: 100px; background-color: #EB5529; font-size: 13px; color: #FFF;"><i class="fas fa-sad-tear"></i><%= rate %></p>
+                                  <% end %>
+                                <% end %>
+                                
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p></p>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+          <p></p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

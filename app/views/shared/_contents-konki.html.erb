@@ -1,11 +1,11 @@
 <div class="row margin-top">
   <div class="col-md-10">
-    <h3 class="content-border"><i class="far fa-check-square"></i>【話題の作品が目白押し!?】今期のアニメ　<%= Time.now.year %>年 <%= Work.current_season %></h3>
+    <h3 style="color: #FFFFFF" class="content-border"><i class="far fa-check-square"></i>【話題の作品が目白押し!?】〜今期のアニメ　<%= Time.now.year %>年 <%= Work.current_season %>〜</h3>
   </div>
   <%# <div class="col-md-2">
   </div> %>
   <div class="col-md-2" style="text-align: right">
-    <h5><%= link_to "もっと見る" %></h5>
+    <h5><%= render partial: "shared/more-watch-modal-konki", locals: {work_contents_list: @work_contents_list, watches_konki: @watches_konki} %></h5>
   </div>
 </div>
 <div class="swiper-container">
@@ -17,7 +17,9 @@
           </div>
         <% else %>
           <div class="swiper-slide">
-            <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail", size: "303x159" %></span>
+            <%= link_to "/works/detail/#{work.id}", data:{"turbolinks"=>false} do %>
+              <span class="cut" data-toggle="tooltip" data-placement="top" title=<%= work.title %>><%= image_tag work.facebook_og_image_url ,alt: "#{work.title}", class: "img-thumbnail", size: "303x159" %></span>
+            <% end %>
           </div>
         <% end %>
       <% end %>

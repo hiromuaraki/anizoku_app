@@ -1,17 +1,20 @@
 <%# ナビゲーション %>
-<%# <body class="drawer drawer--right"> %>
   <header role="banner">
-    <button type="button" class="drawer-toggle drawer-hamburger">
+    <button style="background-color: #FFFFFF" type="button" class="drawer-toggle drawer-hamburger">
       <span class="sr-only">toggle navigation</span>
       <span class="drawer-hamburger-icon"></span>
     </button>
     <nav class="drawer-nav" role="navigation">
-      <ul class="drawer-menu" style="text-align: center">
+      <ul class="drawer-menu">
         <li class="drawer-brand" style="background-color: #130B06">
-          <a href="/static_pages/home"><%= image_tag "Free_Sample_By_Wix.jpeg", {size: "150x150"} %></a>
+          <div data-turbolinks="false">
+            <a href="/static_pages/home"><%= image_tag "Free_Sample_By_Wix.jpeg", {size: "150x150"} %></a>
+          </div>
         </li>
         <li class="drawer-menu-item">
-          <a href="#"><%= image_tag "twitter_hiromu.jpeg",{class: "rounded-circle", size: "80x80"} %></a>
+        <%= link_to "/users/my_page",data:{"turbolinks"=>false} do %>
+          <%= image_tag "twitter_hiromu.jpeg",{class: "rounded-circle", size: "80x80"} %>
+        <% end %>
         </li>
         <%# ajaxで表示の切り替え %>
         <li class="display_mode-nav"></li>
@@ -19,14 +22,11 @@
           <i class="far fa-smile"></i> <%= link_to "おもしろいアニメ", "#" %>
         </li>
         <li class="drawer-menu-item">
-          <i class="fas fa-list-ul"></i> <%= link_to "アニメ一覧", "#" %>
-        </li>
-        <li class="drawer-menu-item">
-          <i class="fas fa-user"></i> <%= link_to "マイページ", "#"%>
+          <i class="far fa-smile"></i> <%= link_to "twitter", "/auth/twitter" %>
         </li>
         <li class="drawer-menu-item">
           <% if logged_in? %>
-            <i class="fas fa-sign-out-alt"></i> <%= link_to 'ログアウト',logout_path, method: :delete%>
+            <i class="fas fa-sign-out-alt"></i> <%= link_to 'ログアウト',logout_path, method: :delete %>
           <% end %>
         </li>
         <li class="drawer-menu-item">

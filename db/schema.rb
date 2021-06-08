@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_05_112722) do
+ActiveRecord::Schema.define(version: 2021_05_24_033432) do
 
   create_table "admin_posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "title", null: false
@@ -63,6 +63,17 @@ ActiveRecord::Schema.define(version: 2021_04_05_112722) do
     t.index ["tag_id"], name: "index_danimes_on_tag_id"
   end
 
+  create_table "mylists", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "work_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "status"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_mylists_on_user_id"
+    t.index ["work_id", "user_id"], name: "index_mylists_on_work_id_and_user_id", unique: true
+    t.index ["work_id"], name: "index_mylists_on_work_id"
+  end
+
   create_table "organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name"
     t.string "name_kana"
@@ -74,12 +85,28 @@ ActiveRecord::Schema.define(version: 2021_04_05_112722) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "series", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "reviews", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "work_id", null: false
+    t.bigint "user_id", null: false
+    t.float "rate", default: 0.0, null: false
+    t.float "rating_drawing", default: 0.0, null: false
+    t.float "rating_story", default: 0.0, null: false
+    t.float "rating_actor", default: 0.0, null: false
+    t.float "rating_incidental_music", default: 0.0, null: false
+    t.float "rating_directing", default: 0.0, null: false
+    t.float "rating_characters", default: 0.0, null: false
+    t.text "content"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_reviews_on_user_id"
+    t.index ["work_id", "user_id"], name: "index_reviews_on_work_id_and_user_id", unique: true
+    t.index ["work_id"], name: "index_reviews_on_work_id"
+  end
+
+  create_table "series", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["work_id"], name: "index_series_on_work_id"
   end
 
   create_table "staffs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -120,11 +147,32 @@ ActiveRecord::Schema.define(version: 2021_04_05_112722) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  create_table "watches", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "work_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "status"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_watches_on_user_id"
+    t.index ["work_id", "user_id"], name: "index_watches_on_work_id_and_user_id", unique: true
+    t.index ["work_id"], name: "index_watches_on_work_id"
+  end
+
   create_table "wikilists", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "title", null: false
     t.string "organization"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "work_series", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "work_id", null: false
+    t.bigint "series_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["series_id"], name: "index_work_series_on_series_id"
+    t.index ["work_id", "series_id"], name: "index_work_series_on_work_id_and_series_id", unique: true
+    t.index ["work_id"], name: "index_work_series_on_work_id"
   end
 
   create_table "workcasts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -156,6 +204,8 @@ ActiveRecord::Schema.define(version: 2021_04_05_112722) do
     t.boolean "is_deleted", default: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "description", size: :long
+    t.string "description_source", default: ""
   end
 
   create_table "worktags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -172,9 +222,16 @@ ActiveRecord::Schema.define(version: 2021_04_05_112722) do
   add_foreign_key "casts", "characters"
   add_foreign_key "characters", "works"
   add_foreign_key "danimes", "tags"
-  add_foreign_key "series", "works"
+  add_foreign_key "mylists", "users"
+  add_foreign_key "mylists", "works"
+  add_foreign_key "reviews", "users"
+  add_foreign_key "reviews", "works"
   add_foreign_key "staffs", "works"
   add_foreign_key "user_profiles", "users"
+  add_foreign_key "watches", "users"
+  add_foreign_key "watches", "works"
+  add_foreign_key "work_series", "series"
+  add_foreign_key "work_series", "works"
   add_foreign_key "workcasts", "casts"
   add_foreign_key "workcasts", "works"
   add_foreign_key "worktags", "tags"

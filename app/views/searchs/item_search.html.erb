@@ -1,62 +1,97 @@
-<div class="container">
-<p><%= render("shared/search") %></p>
+<div style="margin-bottom: 50px" class="row">
+  
+  <div style="margin-left: 340px" class="col-md-4">
+    <p><%= render("shared/search") %></p>
+  </div>
+</div>
 
-  <ul class="nav nav-tabs" role="tablist">
-    <li class="nav-item">
-      <a class="nav-link active" id="work-tab" data-toggle="tab" href="#work-tab" role="tab" aria-controls="work" aria-selected="true">作品名 <span style="color: #FFFFFF" class="card-text badge rounded-pill bg-primary"><%= @works.size %></span></a>
+<div class="container">
+
+  <ul class="nav nav-pills nav-tabs mb-3" id="pills-tab" role="tablist" style="font-size: 25px">
+    <li class="nav-item" role="presentation">
+      <a style="font-weight: bold; color: #FFF;"  class="nav-link active a-link" id="pills-work-tab" data-bs-toggle="pill" data-toggle="tab" href="#pills-work" role="tab" aria-controls="pills-work" aria-selected="true">作品名 <span style="color: #FFFFFF" class="card-text badge rounded-pill bg-primary"><%= @works&.size %></span></a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" id="character-tab" data-toggle="tab" href="#character-tab" role="tab" aria-controls="character" aria-selected="false">キャスト名 <span style="color: #FFFFFF" class="card-text badge rounded-pill bg-primary"> <%= @cast_count %></a>
+    <li class="nav-item" role="presentation">
+    <% if @works.blank? %>
+      <a style="font-weight: bold; color: #FFF;" class="nav-link a-link" id="pills-character-tab" data-bs-toggle="pill" data-toggle="tab" href="#pills-character" role="tab" aria-controls="pills-character" aria-selected="false">キャスト名 <span style="color: #FFFFFF" class="card-text badge rounded-pill bg-primary"> <%= @name_count %></a>
+    <% else %>
+      <a style="font-weight: bold; color: #FFF;" class="nav-link a-link" id="pills-character-tab" data-bs-toggle="pill" data-toggle="tab" href="#pills-character" role="tab" aria-controls="pills-character" aria-selected="false">キャスト名 <span style="color: #FFFFFF" class="card-text badge rounded-pill bg-primary"> <%= @cast_count %></a>
+    <% end %>
     </li>
   </ul>
 
   <%# アニメタイトルの検索結果を表示する %>
-  <div class="tab-content">
-    <div class="tab-pane fade show active" id="work" role="tabpanel" aria-labelledby="work-tab">
-      <div class="card mb-3" style="max-width: 1200px">
+  <div class="tab-content" id="pills-tabContent">
+    <div class="tab-pane fade show active" id="pills-work" role="tabpanel" aria-labelledby="pills-work-tab">
+      <div class="card mb-3" style="max-width: 1200px; box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32);">
         <% if !@works.blank? %>
-          <% @works.each do |work| %>
-            <div class="row g-0">
-              <div class="col-md-7">
-                <%= link_to image_tag !work&.facebook_og_image_url.blank? ? work&.facebook_og_image_url : "no_image", alt: "#{work.title}", class: "img-thumbnail", size: "500x267" %>
-              </div>
+          <% @works.each_with_index do |work, i| %>
+            <div class="row">
               <div class="col-md-5">
+                <%= link_to "/works/detail/#{work.id}", data:{"turbolinks"=>false} do %>
+                  <%= image_tag !work&.facebook_og_image_url.blank? ? work&.facebook_og_image_url : "no_image",alt: "#{work.title}", class: "img-thumbnail", size: "500x267" %>
+                <% end %>
+              </div>
+              <div class="col-md-7">
                 <div class="card-body">
-                <div style="color: #FFFFFF; font-size: 1.2em;">
+                <div style="color: #FFFFFF; font-size: 1.3em;">
                   <span class="card-text badge rounded-pill bg-primary"><%= work.season_name_text %></span>
                   <span class="card-text badge rounded-pill bg-primary"><%= work.media_text %></span>
                 </div>
-                  <h5 class="card-title"><%= work.title %></h5>
-                  <p class="card-text">あらすじがくる予定</p>
+                  <h4 style="margin-top: 5px" class="card-title"><%= work.title %></h4>
+                  <p class="card-text"><%= work.description_source.gsub(/"/, "") %></p>
+                  <div class="dropdown">
+                    <%# 視聴ステータスを配置 これをReactでコンポーネント化する%>
+                    <%= form_with url: "/watches/update", method: :patch, remote: true, id: "status-update#{i}" do |f| %>
+                      <%= hidden_field_tag :work_id, "work_id" %>
+                      <%= hidden_field_tag :watch_status, "status" %>
+                      <%=
+                        f.select :val, 
+                          [
+                            ["見た",    "watched"],
+                            ["見てる",  "watching"],
+                            ["見てない","not_watched"],
+                            ["見たい","want_watch"]
+                          ],{include_blank: "ステータスを選択", selected: !@watches.blank? ? status_type(@watches, work.id) : "ステータスを選択"},{class: "btn btn-success  dropdown-toggle",id: "select-form-#{i}",required: true, autofocus: "true", data: {work_id: work.id }}
+                      %>
+                    <% end %>
+                      
+                  </div>
                 </div>
               </div>
             </div>
           <% end %>
         <% else%>  
           <%# 検索結果がない時、準備中を表示する %>
+          <div style="background-color: #FFF; color: #000"><h1>検索結果がありません！</h1></div>
         <% end %>
+        <%= javascript_pack_tag 'form/select-status' %>
       </div>
     </div>
 
       <%# 声優名の検索結果一覧を表示する %>
-      <div class="tab-pane fade show" id="character" role="tabpanel" aria-labelledby="character-tab">
+      <div class="tab-pane fade show" id="pills-character" role="tabpanel" aria-labelledby="pills-character-tab">
         <div class="card mb-3" style="max-width: 1200px">
           <% count = 0 %>
-          <% cast_list = [] %>
           <% if !@works.blank? %>
+            <% cast_list = [] %>
             <% @works.size.times do |index|%>
               <% @works[index].casts.each_with_index do |cast, i| %>
                 <div class="row g-0">
                   <div class="col-md-12">
                     <div class="card-group">
-                      <% if !cast_list.include?(cast&.name)%>
+                      <% if !cast_list.include?(cast&.name) %>
                         <div class="card">
                           <div class="card-body">
-                            <h3 class="card-title"><i class="fas fa-microphone-alt"></i> <%= link_to cast&.name, cast_works_path(params: {cast_data: {cast_name: cast.name} }), method: :post %></h3>
+                            <h3 class="card-title"><i class="fas fa-microphone-alt"></i>
+                              <%= link_to "/cast_works/#{cast.name}",data:{"turbolinks"=>false} do %>
+                                <%= cast&.name %>
+                              <% end %>
+                            </h3>
                             <% cast_list << cast&.name %>
-                            <p class="card-text">ニックネーム：現在準備中🙇‍♂️</p> 
+                            <p class="card-text"></p> 
                           </div>
-                          <div class="card-footer">
+                          <div class="card-footer" style="background-color: #ffeaea">
                             <h6 class="text-muted">キャラクター名：<%= !@characters.blank? ? @characters[count] : "現在準備中です🙇‍♀️" %></h6>
                             <% count += 1%>
                           </div>
@@ -67,15 +102,19 @@
                 </div>
               <% end %>
             <% end %>
-          <% elsif !@works.blank? && params[:q][:title_cont].split(/[[:blank:]]+/).size > 1 %>
+          <% elsif !@works.blank? && params[:cast_name].split(/[[:blank:]]+/).size > 1 %>
             <% @casts.each_with_index do |cast, i| %>
               <div class="row g-0">
                 <div class="col-md-12">
                   <div class="card-group">
                     <div class="card">
                       <div class="card-body">
-                        <h3 class="text-muted"><i class="fas fa-microphone-alt"> </i><%= link_to cast, cast_works_path(params: {cast_data: {cast_name: cast.name}}) %></h3>
-                        <p class="card-text">ニックネーム：現在準備中🙇‍♂️</p>
+                        <h3 class="text-muted"><i class="fas fa-microphone-alt"> </i>
+                          <%= link_to "/cast_works/#{cast.name}",data:{"turbolinks"=>false} do %>
+                            <%= cast&.name %>
+                          <% end %>  
+                        </h3>
+                        <p class="card-text"></p>
                       </div>
                       <div class="card-footer">
                         <h6 class="card-title">キャラクター名：<%= @characters[i] %></h6>
@@ -85,9 +124,52 @@
                 </div>
               </div>
             <% end %>
-          <% else %>
             <%# データがない時に画像を表示する %>
-          <% end %>
+            <% elsif @cast_name.size > 1 %>
+              <% @cast_name.each_with_index do |cast, i| %>
+                <div class="row g-0">
+                  <div class="col-md-12">
+                    <div class="card-group">
+                      <div class="card">
+                        <div class="card-body">
+                          <h3 class="text-muted"><i class="fas fa-microphone-alt"> </i>
+                            <%= link_to "/cast_works/#{cast}",data:{"turbolinks"=>false} do %>
+                              <%= cast %>
+                            <% end %>  
+                          </h3>
+                          <p class="card-text">かな：<%= !@cast_name_kana[i].blank? ? @cast_name_kana[i] : "現在準備中" %></p>
+                        </div>
+                        <div class="card-footer" style="background-color: #ffeaea">
+                          <h6></h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% elsif @cast_name.nil? || @cast_name.blank? %>
+              
+            <% else %>
+              <div class="row g-0">
+                <div class="col-md-12">
+                  <div class="card-group">
+                    <div class="card">
+                      <div class="card-body">
+                        <h3 class="text-muted"><i class="fas fa-microphone-alt"> </i>
+                          <%= link_to "/cast_works/#{@cast_name[0]}",data:{"turbolinks"=>false} do %>
+                            <%= @cast_name[0] %>
+                          <% end %>  
+                        </h3>
+                        <p class="card-text"><%= @cast_name_kana[0] %></p>
+                      </div>
+                      <div class="card-footer" style="background-color: #ffeaea">
+                        <h6></h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
         </div>
       </div>
 
