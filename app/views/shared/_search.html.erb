@@ -1,4 +1,6 @@
-<%= search_form_for @search, url: search_path do |f| %>
-  <%= f.search_field :title_cont, class: "search",placeholder: "🔍 作品名", autocomplete: 'off', required: true %>
-  <%= f.submit "検索する", class: "btn btn-outline-primary" %>
+<%= form_with url: search_path, method: :get, local: true do |f| %>
+  <div class="input-group">
+  	<%= f.text_field :q_search, value: params[:q_search], class: "form-control", placeholder: "作品名、声優名を入力してください", required: true %>
+  	<span class="input-group-btn"></span>
+  </div>
 <% end %>

@@ -3,14 +3,18 @@
     <div class="carousel-item active">
       <% @works.first(1).each do |work_tags| %>
         <% if !work_tags.facebook_og_image_url.blank? %>
-          <%= image_tag work_tags.facebook_og_image_url, size: "1000x350", alt: "#{work_tags.title}", class: "img-thumbnail" %>
+          <%= link_to "/works/detail/#{work_tags.id}", data:{"turbolinks"=>false} do %>
+            <%= image_tag work_tags.facebook_og_image_url, size: "1000x350", alt: "#{work_tags.title}", class: "img-thumbnail" %>
+          <% end %>
         <% end %>
       <% end %>
     </div>
     <% @works.drop(1).each do |work_tags|%>
       <% if !work_tags.facebook_og_image_url.blank? %>
         <div class="carousel-item">
-          <%= image_tag work_tags.facebook_og_image_url, size: "1000x350", alt: "#{work_tags.title}", class: "img-thumbnail" %>
+          <%= link_to "/works/detail/#{work_tags.id}", data:{"turbolinks"=>false} do %>
+            <%= image_tag work_tags.facebook_og_image_url, size: "1000x350", alt: "#{work_tags.title}", class: "img-thumbnail" %>
+          <% end %>
         </div>
       <% end %>
     <% end %>

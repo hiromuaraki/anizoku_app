@@ -1,0 +1,9 @@
+<% if @mode == 0 %>
+  $("#watched-list").html("<%= j(render 'watches/watched', {watches: @watches, works: @works, season_list: @season_list }) %>");
+<% elsif @mode == 1 %>
+  $("#watching-list").html("<%= j(render 'watches/watching', {watches: @watches, works: @works, season_list: @season_list }) %>");
+<% elsif @mode == 2 %>
+  $("#not-watched-list").html("<%= j(render 'watches/not-watched', {watches: @watches, works: @works, season_list: @season_list }) %>");
+<% elsif @mode == 3 %>
+  $("#want-watch-list").html("<%= j(render 'watches/want-watch', {watches: @watches, works: @works, season_list: @season_list }) %>");
+<% end %>

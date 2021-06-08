@@ -1,0 +1,81 @@
+<% if review.present? %>
+  <p style="margin-top: 50px"></p>
+  <div class="row">
+    <div class="col-md-12">
+      <div style="margin-left: 10px" class="media">
+        <%= image_tag "twitter_hiromu.jpeg",{class: "rounded-circle", size: "64x64"} %>
+        <div class="media-body" style="color: #FFF; margin-top: 20px;">
+          <h6 class="mt-0" style="margin-left: 20px; margin-top: 20px; font-size: 20px;"><%="#{current_user.name}さんの評価"%></h6>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12" style="text-align: right">
+      <h4 style="color: #FFF; margin-top: 15px; text-align: right;"><span style="font-size: 0.8em; color: #FFF;">総合</span>
+        <% if review.review_synthsesis_rate(work.id) == "とても良い" %>
+          <span class="badge rounded-pill bg-primary bg-lg" style="font-size: 1.2em; color: #FFF;"><i class="far fa-heart"></i> <%= review.review_synthsesis_rate(work.id) %></span>
+        <% elsif review.review_synthsesis_rate(work.id) == "良い" %>
+          <span class="badge rounded-pill bg-success bg-lg" style="font-size: 1.2em; color: #FFF;"><i class="fas fa-thumbs-up"></i> <%= review.review_synthsesis_rate(work.id) %></span>
+        <% elsif review.review_synthsesis_rate(work.id) == "普通" %>
+          <span class="badge rounded-pill bg-lg" style="font-size: 1.2em; color: #FFF; background-color: #EB5529;"><i class="far fa-smile"></i> <%= review.review_synthsesis_rate(work.id) %></span>
+        <% else %>
+          <span class="badge rounded-pill bg-secondary bg-lg" style="font-size: 1.2em; color: #FFF;"><i class="fas fa-sad-tear"></i> <%= review.review_synthsesis_rate(work.id) %></span>
+        <% end %>
+      </h4>
+    </div>
+  </div>
+
+  <div class="row kokuban">
+    <%# <div class="col-md-8"> %>
+      <div>
+        <span class="point">評価</span><p></p>
+        <div class="row">
+          <% review.review_items(work.id).each_with_index do |rate, i| %>
+            <div style="width: 300px; margin-left: 20px">
+              <p style="color: #FFF; display: inline-block; font-size: 18px;"><i class="far fa-check-square"></i> <%= review.review_select_list[i] %></p>
+              <% if rate == "とても良い" %>
+                <p class="badge rounded-pill bg-primary bg-lg" style="width: 100px; color: #FFF; font-size: 18px;"><%= rate %></p>
+              <% elsif rate == "良い" %>
+                <p class="badge rounded-pill bg-success bg-lg" style="width: 100px; color: #FFF; font-size: 18px;"><%= rate %></p>
+              <% elsif rate == "普通" %>
+                <p class="badge rounded-pill bg-lg" style="width: 100px; color: #FFF; background-color: #EB5529; font-size: 18px;"><%= rate %></p>
+              <% else %>
+                <p class="badge rounded-pill bg-secondary bg-lg" style="width: 100px; color: #FFF; background-color: #EB5529; font-size: 18px;"><%= rate %></p>
+               <% end %>
+            </div>
+          <% end %>
+            
+        </div>
+        <div class="row" style="margin-bottom: 20px">
+          <div class="col-md-8">
+            <span class="point">感想</span><p></p>
+            <span style="overflow: scroll"><%= review.content.blank? ? "感想を書いてみよう！" : review.content %></span>
+          </div>
+        </div>
+      </div>
+
+      <p></p>
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-sm card-link" style="border-radius: 20px; background-color: #F85B73; color: #FFF;" data-toggle="modal" data-target="#exampleModal">
+        <i class="fas fa-edit"></i>編集する
+      </button>
+
+      <% if !other_reviews.blank? %>
+          <button type="button" class="btn btn-info btn-sm card-link" style="border-radius: 20px" data-toggle="modal" data-target="#exampleModal1">
+            <i class="fas fa-users"></i>他の人のレビューをみる
+          </button>
+      <% end %>
+    <%# </div> %>
+  </div>
+
+  <!-- Modal -->
+  <%# 編集する %>
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <%= render "reviews/modal_view_edit" %>
+  </div>
+
+  <%# 他の人のレビューを見る %>
+  <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <%= render "reviews/modal_view_index",other_reviews: other_reviews %>
+  </div>
+<% end %>

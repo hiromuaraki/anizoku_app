@@ -1,0 +1,9 @@
+<% if @review_mode == 0%>
+  $("#very-good-list").html("<%= j(render 'very-good', {review_works: @review_works, review_season_list: @review_season_list, review_very_count: @review_very_count }) %>");
+<% elsif @review_mode == 1 %>
+  $("#good-list").html("<%= j(render 'good', {review_works: @review_works, review_season_list: @review_season_list, review_good_count: @review_good_count }) %>");
+<% elsif @review_mode == 2 %>
+  $("#normal-list").html("<%= j(render 'normal', {review_works: @review_works, review_season_list: @review_season_list, review_normal_count: @review_normal_count }) %>");
+<% elsif @review_mode == 3 %>
+  $("#bad-list").html("<%= j(render 'bad', {review_works: @review_works, review_season_list: @review_season_list, review_bad_count: @review_bad_count }) %>");
+<% end %>

@@ -8,3 +8,11 @@ ja:
         email: メールアドレス
         password: パスワード
         nick_name: ニックネーム
+      review:
+        rating_drawing: 作画/世界観
+        rating_story: 脚本(STORY)
+        rating_actor: 演技
+        rating_incidental_music: 劇伴/音響
+        rating_directing: 演出
+        rating_characters: キャラクター
+        content: 感想

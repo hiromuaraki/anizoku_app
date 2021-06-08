@@ -1,0 +1,7 @@
+<%= link_to "/mylists/update/#{work_id}", method: :patch, remote: true, id: "mylists" do %>
+  <% if Mylist.exists?(user_id: current_user.id, work_id: work_id)%>
+    <i data-toggle="tooltip" data-placement="left" title="マイリストから削除" class="fas far fa-check-circle fa-3x" style="color: #FFF"></i>
+  <% else %>
+    <i data-toggle="tooltip" data-placement="left" title="マイリストへ追加" class="fas fa-plus-circle fa-3x" style="color: #FFF"></i>
+  <% end %>
+<% end %>

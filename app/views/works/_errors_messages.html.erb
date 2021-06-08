@@ -1,0 +1,11 @@
+<% if @review.errors.any? %>
+  <div id="error_explanation-<%= params[:work_id] %>">
+    <ul style="list-style: none">
+      <div class="alert alert-danger alert-form-extend" role="alert" style="font-size: 15px">
+        <% @review.errors.full_messages.each do |msg| %>
+          <%= msg %>
+        <% end %>
+      </div>
+    </ul>
+  </div>
+<% end %>

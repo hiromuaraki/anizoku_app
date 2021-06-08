@@ -1,0 +1,16 @@
+<%# 視聴ステータスを配置 これをReactでコンポーネント化する%>
+<%= form_with url: "/watches/update", method: :patch, remote: true, id: "status-update0" do |f| %>
+  <%= hidden_field_tag :work_id, "work_id" %>
+  <%= hidden_field_tag :watch_status, "status" %>
+  
+    <%=
+      f.select :val, 
+        [
+          ["見た",    "watched"],
+          ["見てる",  "watching"],
+          ["見てない","not_watched"],
+          ["見たい","want_watch"]
+        ],{include_blank: "ステータスを選択", selected: !watch.blank? ? watch.type_status(watch) : "ステータスを選択"},{class: "btn btn-block btn-success  dropdown-toggle",id: "select-form0",required: true, autofocus: "true", data: {work_id: work.id }}
+    %>
+  
+<% end %>

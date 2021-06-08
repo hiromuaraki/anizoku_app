@@ -38,15 +38,22 @@ body {
   // background-color: #130B06;
 // }
 
+// リンクを動作させるため必須
+.card-link {
+  position: relative;
+}
+
 .alert {
-	text-align: center;
+	// text-align: center;
+  // width: 930px;
+  margin: 0 auto;
 }
 .alert-info {
   background-color: #bde9ff;
   border-color: #bde9ff;
   color: #4c6977;
 }
- 
+
 .alert-danger {
   background-color: #f3c0c0;
   border-color: #f3c0c0;
@@ -57,6 +64,9 @@ body {
   text-align: center;
 }
 
+.right {
+  text-align: right;
+}
 .radius-border {
   border-radius: 20px;
   background-color: gold;
@@ -153,32 +163,45 @@ body {
 }
 
 /* 全体のスタイル */
-.swiper-container {
-	width: 100%;
-	height: 250px;
-}
+// .swiper-container {
+	// width: 100%;
+	// height: 250px;
+// }
 /* 全スライド共通スタイル */
 .swiper-slide {
-	color: #ffffff;
+	// color: #ffffff;
 	width: 100%;
 	height: 125px;
 	text-align: center;
-	line-height: 125px;
+	// line-height: 125px;
+}
+
+.carousel-control-next:hover{
+  background-color: #0C0C0C;
+  opacity: 0.4;
+}
+
+.carousel-control-prev:hover {
+  background-color: #0C0C0C;
+  opacity: 0.4;
+}
+
+.swiper-container{
+  width: 100%;
+  height: 200px;
+  padding: 10px;
 }
 
 .list-group {
-  height: 70px;
+  height: 50px;
   // padding: 20px 20px 0px 0px;
-  padding: 20px 20px 50px 10px;
-  font-size: 1em;
+  padding: 20px 20px 50px 20px;
   text-align: left;
   font-weight: bold;
-  color: #E60914;
-  background-color: #FFFFFF;
-  margin: 0.5em 0px;
-  border: outset;
-  border-radius: 30px;
-  // box-shadow: 2px 2px;
+  color: #FFF;
+  // margin: 0.5em 0px;
+  box-shadow: 2px 2px;
+  // border: outset;
 
 }
 
@@ -192,9 +215,11 @@ span a:hover {
   text-decoration: none;
 }
 
-i {
-  opacity: 0.5;
+select {
+  width: 140px;
+  height: 45px;
 }
+
 
 /*管理者画面 checkboxのサイズを変更する*/
 .admin {
@@ -206,12 +231,38 @@ i {
 }
 
 /*検索ボックス*/
-input[type=search] {
-  width: 500px;
-  height: 40px;
+input[type=text] {
+  width: 180px;
+  height: 60px;
   margin-top: 80px;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32);
 }
+
+.edit-link {
+  color: #FFF;
+}
+
+.edit-link:hover {
+  color: #FFF;
+}
+
+.edit-btn {
+  color: #FFF;
+}
+
+.edit-btn:hover {
+  opacity: 0.6;
+}
+
+.review-box {
+  font-size: 13px;
+}
+
+textarea {
+  resize: none;
+  border-radius: 20px;
+}
+
 
 // .tooltip-inner{
   // max-width: 100%;
@@ -257,5 +308,104 @@ input[type=search] {
   // -webkit-align-items: center;
   // align-items: center;
 // }
+
+.kokuban {
+  font-family: HuiFontP109;
+  background-color:#16202C;
+  margin: 5px 0 10px 0;
+  padding: 10px;
+  border: 1px solid #FFF;
+  border-radius: 3px;
+  // box-shadow: 2px 2px 4px #666, 2px 2px 2px #111 inset;
+  // text-shadow: 0px 0px 2px #000;
+  line-height: 1.9;
+}
+.point {
+  color: #ffb1b3;
+  font-weight: bold;
+  border: 3px solid #ffb1b3;
+  font-size: 20px;
+}
+
+.kanso-border {
+  border-top: 1px dotted #8c8b8b; 
+}
+
+hr {
+  height: 8px;
+  background-image: repeating-linear-gradient(45deg, #ccc 0, #ccc 1px, transparent 0, transparent 50%), repeating-linear-gradient(135deg, #ccc 0, #ccc 1px, transparent 0, transparent 50%);
+  background-size: 8px 8px;
+}
+
+.box-title {
+  display: inline-block;
+  top: -27px;
+  left: -3px;
+  padding: 0 9px;
+  font-size: 40px;
+  background: #EB5529;
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.img-zoom:hover {
+  transform: scale(1.2);
+}
+
+.img-zoom {
+  transition-duration: 0.3s;
+}
+
+.a-link {
+  text-decoration: none;
+  color: #000;
+}
+
+.ele-left {
+  margin-left: 21px;
+}
+
+.parent {
+  position: relative;
+}
+
+.mylists {
+  position:  absolute;        /* 要素の配置方法を指定 */
+  left: 100px;
+  top: 200px;
+  z-index: 99;
+
+}
+
+.mylists2 {
+  position:  absolute;        /* 要素の配置方法を指定 */
+  left: 150px;
+  top: 170px;
+  z-index: 99;
+
+}
+
+.mylists3 {
+  position:  absolute;        /* 要素の配置方法を指定 */
+  left: 150px;
+  top: 190px;
+  z-index: 99;
+
+}
+
+.konkilists {
+  position:  absolute;        /* 要素の配置方法を指定 */
+  left: 100px;
+  top: 180px;
+  z-index: 99;
+
+}
+
+
+.ele-border {
+  border-bottom: 5px groove #E40A15;
+  opacity: 0.5;
+}
 
 

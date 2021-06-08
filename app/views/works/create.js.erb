@@ -1,0 +1,2 @@
+jQuery("#error_explanation-<%= params[:work_id] %>").html("<%= j(render "works/errors_messages", locals: { review: @review, work_id: params[:work_id] }) %>");
+jQuery('#error_explanation-<%= params[:work_id] %>').show();

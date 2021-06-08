@@ -1,0 +1,49 @@
+<button style="border-radius: 20px;" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target=".bd-example-modal-xl-recomended">もっと見る</button>
+
+<div class="modal fade bd-example-modal-xl-recomended" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content" style="background-color: #130B06">
+      <h1 style="color: #FFF; text-align: center; margin-bottom: 30px; margin-top: 20px;">〜管理人のおすすめ〜</h1>
+      <div class="row" style="box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32); 10px; width: 1200px;">
+        <% works_recomended.first(100).each_with_index do |work, i| %>
+          <% if !work.facebook_og_image_url.blank? %>
+            <div class="parent" style="background-color: #E5E5E5; width: 200px; border: solid 2px #000;">
+              <div style="width: 197px; height: 80px;">
+                <div class="mylists3">
+                  <%= render partial:"shared/mylists-status-2", locals: {work_id: work.id ,index: i} %>
+                </div>
+                <%= link_to "/works/detail/#{work.id}" do %>
+                  <% image_tag !work&.facebook_og_image_url.blank? ? work&.facebook_og_image_url : "no_image", alt: "#{work.title}", class: "img-thumbnail img-responsive img-rounded" %>
+                <% end %>
+              </div>
+              
+              <div class="dropdown" style="height: 120px; margin-top: 40px;">
+                <%= form_with url: "/watches/update", method: :patch, remote: true, id: "status-update#{i}" do |f| %>
+                  <%= hidden_field_tag :work_id, "work_id" %>
+                  <%= hidden_field_tag :watch_status, "status" %>
+                  <%=
+                    f.select :val, 
+                      [
+                        ["見た",    "watched"],
+                        ["見てる",  "watching"],
+                        ["見てない","not_watched"],
+                        ["見たい","want_watch"]
+                      ],{include_blank: "ステータスを選択", selected: !watches_recomended.blank? ? status_type(watches_recomended, work.id) : "ステータスを選択"},{class: "btn btn-block btn-success  dropdown-toggle",id: "select-form-#{i}",required: true, autofocus: "true", data: {work_id: work.id }}
+                  %>
+                <% end %>
+
+                <p style="font-size: 15px; color: #000; font-style: bold; text-align: left;">
+                  <%= work.title.truncate(25) %>
+                </p>
+              </div>
+                    
+            </div>
+          
+          <% end %>
+          <p></p>
+        <% end %>
+        <%= javascript_pack_tag 'form/select-status' %>
+      </div>
+    </div>
+  </div>
+</div>

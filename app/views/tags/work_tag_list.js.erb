@@ -1,0 +1,2 @@
+history.replaceState('','',<%= @tag.id%>);
+jQuery("#tag-list").html("<%= j(render partial: "tags/work-tag-list", locals: {tags: @tags, tag_group_count: @tag_group_count, tags: @tags, tag: @tag, works: @works, season_list: @season_list, watches: @watches }) %>");

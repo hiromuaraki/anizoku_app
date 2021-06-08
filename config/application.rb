@@ -27,6 +27,10 @@ module AnizokuApp
     config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.yml').to_s]
     config.generators.system_tests = nil
     config.time_zone = 'Asia/Tokyo'
+    # config.session_store :cookie_store, key: '_interslice_session'
+    # config.middleware.use ActionDispatch::Cookies # Required for all session management
+    # config.middleware.use ActionDispatch::Session::CookieStore, config.session_options
+    config.active_record.default_timezone = :local
       config.generators do |g|
         g.stylesheets false   #styleシート
         g.javascripts false   #javascript

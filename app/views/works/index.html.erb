@@ -1,0 +1,254 @@
+<div class="container">
+  <div class="card">
+    <%# ここにイメージを配置 %>
+    <%= image_tag !@work&.facebook_og_image_url.blank? ? @work&.facebook_og_image_url : "no_image", alt: "#{@work.title}", class: "img-thumbnail", size: "1250x400" %>
+    <div class="card-img-overlay">
+      <% if Review.exists?(user_id: current_user.id, work_id: @work.id) %>
+        <p style="height: 20px; font-size: 1em;" class="text-white badge rounded-pill bg-success">✔︎レビュー済み</p>
+      <% else %>
+        <p style="height: 20px; font-size: 1em;" class="text-white badge rounded-pill bg-secondary">まだレビューしてません</p>
+      <% end %>
+    </div>
+  
+    <div class="card-body" style="background-color: #0B1521;">
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+                <div class="row">
+                  <%= render "layouts/alert" %>
+                  <% unless Review.exists?(user_id: current_user.id, work_id: @work.id) %>
+                      <button class="btn btn-primary btn-block card-link" data-toggle="collapse" href="#collapse1"><i class="fas fa-pencil-alt"></i> レビューを書く</button>
+                  <% end %>
+                </div>
+            </h4>
+          </div>
+            <%# 初めてレビューを書いた時だけ %>
+
+            <div id="collapse1" class="panel-collapse collapse" style="margin-top: 30px">
+              <div class="panel-body">
+                <div style="color: #FFFFFF" class="form-group">
+                  <div class="row">
+                      <div id="error_explanation-<%= params[:work_id] %>"></div>
+                    <div class="col-md-5">
+                        <%# ここにセレクトボックス を配置する %>
+                        <%= form_with url: "/works/detail/#{@work.id}", method: :post, remote: true do |f| %>
+                          <%= hidden_field_tag :work_id, @work.id %>
+                          <%= hidden_field_tag :url, @url %>
+                          <div class="row">
+                            <div class="col-md-4">
+                                
+                                  <p style="font-size: 15px"><i class="far fa-check-square"></i> 作画/世界観</p>
+                                  <%=
+                                    f.select :rating_drawing, 
+                                      [
+                                        ["とても良い", "very_good"],
+                                        ["良い", "good"],
+                                        ["普通", "normal"],
+                                        ["良くない","bad"]
+                                      ],include_blank: "選択して下さい", class: "form-control", required: true
+                                  %>
+                                
+                            </div>
+
+                              <div class="col-md-4">
+                                
+                                  <p style="font-size: 15px"><i class="far fa-check-square"></i> 脚本(STORY)</p>
+                                  <%=
+                                    f.select :rating_story, 
+                                      [
+                                        ["とても良い", "very_good"],
+                                        ["良い", "good"],
+                                        ["普通", "normal"],
+                                        ["良くない","bad"]
+                                      ],include_blank: "選択して下さい", class: "form-control",required: true
+                                  %>
+                                
+                              </div>
+
+                              <div class="col-md-4">
+                                
+                                  <p style="font-size: 15x"><i class="far fa-check-square"></i> 演技</p>
+                                  <%=
+                                    f.select :rating_actor, 
+                                      [
+                                        ["とても良い", "very_good"],
+                                        ["良い", "good"],
+                                        ["普通", "normal"],
+                                        ["良くない","bad"]
+                                      ],include_blank: "選択して下さい", class: "form-control",required: true
+                                  %>
+                                
+                              </div>
+
+                          </div>
+
+                          <%# 下の段 %>
+                          <div class="row">
+
+                            <div class="col-md-4">
+                              
+                                <p style="font-size: 15px"><i class="far fa-check-square"></i> 劇伴/音響</p>
+                                <%=
+                                  f.select :rating_incidental_music, 
+                                    [
+                                      ["とても良い", "very_good"],
+                                      ["良い", "good"],
+                                      ["普通", "normal"],
+                                      ["良くない","bad"]
+                                    ],include_blank: "選択して下さい", class: "form-control",required: true
+                                %>
+                              
+                            </div>
+
+                            <div class="col-md-4">
+                              
+                                <p style="font-size: 15px"><i class="far fa-check-square"></i> 演出</p>
+                                <%=
+                                  f.select :rating_directing, 
+                                    [
+                                      ["とても良い", "very_good"],
+                                      ["良い", "good"],
+                                      ["普通", "normal"],
+                                      ["良くない","bad"]
+                                    ],include_blank: "選択して下さい", class: "form-control",required: true
+                                %>
+                              
+                            </div>
+
+                            <div class="col-md-4">
+                              
+                                <p style="font-size: 15px"><i class="far fa-check-square"></i> キャラクター</p>
+                                <%=
+                                  f.select :rating_characters, 
+                                    [
+                                      ["とても良い", "very_good"],
+                                      ["良い", "good"],
+                                      ["普通", "normal"],
+                                      ["良くない","bad"]
+                                    ],include_blank: "選択して下さい", class: "form-control",required: true
+                                %>
+                              
+                            </div>
+
+                          </div>
+                      </div>  
+
+                        <div class="col-md-7">
+                          <p style="float:left; font-size: 15px;"><i class="far fa-check-square"></i>感想を書いてみよう！<p>
+                          <%= f.text_area :content, class: "form-control",id: "textarea",cols: "10", rows: "5", maxlength: "160", placeholder: "入力自由(楽しくコメントしよう！)" %>
+                        </div>
+
+                  </div>
+                  <p style="text-align: right; margin-top: 5px;"><%= f.button "投稿する", action: :create, remote: true, id: "button", disabled: false, class: "btn btn-primary btn-lg card-link" %></p>
+                  <%= javascript_pack_tag 'form/maxlength_count' %>
+                  <% end %>
+                
+                </div>
+             </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <h1 style="color: #FFF" class="card-title"><%= @work.title %></h1>
+            <div class="row">
+              <div class="col-md-9">
+                <p class="card-text" style="font-size: 17px; margin-left: 2px; color: #FFF;">⭐️⭐️⭐️⭐️⭐️ <%= "|#{@work.season_name_text}"%></p>
+              </div>
+              <div class="col-md-1">
+                <%= render partial: "shared/mylists-status", locals: { work_id: @work.id } %>
+              </div>
+              <div class="col-md-2">
+                <div class="dropdown" style="text-align: center">
+                  <%= render partial: "shared/select-status", locals: { watch: @watch, work: @work} %>
+                  <%= javascript_pack_tag 'form/select-status' %>
+                </div>
+              </div>
+            </div>
+          
+          </div>
+
+          <div style="color: #FFFFFF">
+            <% if !@work.description.nil? %>
+              <h4 style="opacity: 0.8; padding: 5px;"><i class="fab fa-readme"></i> ストーリー</h4><blockquote style="opacity: 0.5; padding: 5px; line-height: 30px;"><%= @work.description.blank? ? "現在準備中🙇‍♂️" : @work.description %></blockquote>
+            <% end %>
+            <% if !@work.characters.blank? %>
+              <h4 style="opacity: 0.8; padding: 5px;"><i class="fas fa-microphone-alt"></i> キャスト(クリックで一覧へ)</h4>
+                <%# 声優一覧 %>
+                <div style="padding:5px" class="row">
+                  <% @work.characters.each_with_index do |character, i| %>
+                    <blockquote style="display: inline-block; margin: 10px; opacity: 0.5; margin-left: 15px; line-height: 15px;"><%= character.name %>:
+                      <%= link_to "/cast_works/#{@work.casts[i]&.name}", class:"edit-link" do %>
+                        <%= @work.casts[i]&.name %>
+                      <% end %>
+                    </blockquote>
+                  <%end %>
+                </div>
+                <p></p>
+            <% end %>
+              <h4 style="opacity: 0.8; padding: 5px;"><i class="fas fa-thumbtack"></i> スタッフ(クリックで一覧へ)</h4>
+              <p></p>
+              <%# 原作/その他スタッフ %>
+              <div class="row">
+                <% @staffs.each do |staff| %>
+                  <blockquote style="display: inline-block; margin: 5px; margin-left: 15px; opacity: 0.5; padding: 7px; line-height: 15px;"><%= staff.role_text == "その他" ? staff.role_other : staff.role_text %>:
+                    <%= link_to "/organizations/#{ staff.id }",class:"edit-link" do %>
+                      <%= staff.name %>
+                    <% end %>
+                  </blockquote>
+                <% end %>
+              </div>
+                <p></p>
+              <%# コピーライト %>
+              <div class="row">
+                <blockquote style="opacity: 0.6; margin-left: 15px; padding: 5px;"><%= @work.description_source.blank? ? "現在準備中🙇‍♂️" : @work.description_source.gsub(/"/, "") %></blockquote>
+              </div>
+              <div class="row">
+                <blockquote style="opacity: 0.6; margin-left: 15px; padding: 5px;">引用元:<%= @work.official_site_url.blank? ? "" : @work.official_site_url %></blockquote></p>
+              </div>
+
+              <h4 style="opacity: 0.8; padding: 5px;"><i class="fas fa-glasses"></i> レビュー</h4>
+              <%# レビューが存在する時だけ %>
+              <%= render partial: "reviews/review", locals: {review: @review, work: @work, other_reviews: @other_reviews } %>
+              
+              <%# 関連シリーズの表示 %>
+              <h4 style="opacity: 0.8; padding: 5px; color: #FFF; margin-top: 20px;"><i class="fas fa-heart"></i> 関連シリーズ</h4>
+              <% if !@series.blank?%>
+                <div class="row">
+                  <% @series.size.times do |i| %>
+                    <% if !@series[i].facebook_og_image_url.blank?%>
+                      <div class="col-md-3">
+                        <%= link_to "/works/detail/#{@series[i].id}" do %>
+                          <%= image_tag !@series[i].facebook_og_image_url.blank? ? @series[i].facebook_og_image_url : "no_image", alt: "#{@series[i].title}", class: "img-thumbnail"%><p></p>
+                        <% end %>
+                        <caption>
+                          <p style="background-color: #000"><%= @series[i].title %></p>
+                        </caption>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <%# タグ一覧 %>
+              <h4 style="margin-top: 20px"><i class="fas fa-tags"></i> タグから違う作品を探す</h4>
+              <div class="row" style="color: #FFF; margin-left: 10px;">
+                <%@tags.each do |tag| %>
+                  <p style="margin-top: 10px; margin-left: 1px; display: inline-block; color: #FFF; font-size: 25px;">
+                    <%= link_to "/tags/work_list/#{tag.id}", class: "badge rounded-pill bg-secondary edit-link card-link" do %>
+                      <span><%= tag.name %></span>
+                    <% end %>
+                  </p>
+                <% end %>
+              </div>
+          </div>
+
+          
+            
+          
+        </div>
+    </div>
+  </div>
+</div>

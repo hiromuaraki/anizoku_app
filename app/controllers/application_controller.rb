@@ -1,15 +1,9 @@
 
 class ApplicationController < ActionController::Base
   include SessionsHelper
-  before_action :set_search
   #管理者の権限かどうか
   def validate_admin?
     current_user.admin? 
-  end
-
-  def set_search
-    @search = Work.ransack(params[:q])
-    @items = @search.result
   end
 
   #ログインしているかどうか
