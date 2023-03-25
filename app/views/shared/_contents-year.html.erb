@@ -1,0 +1,17 @@
+<div class="row" style="margin-top: 30px">
+  <div class="col-md-4">
+    <h3 style="color: #FFF; padding: 5px;"><i class="fas fa-search"></i> 年代から探す</h3>
+  </div>
+</div>
+
+  <div class="row" style="width: 930px; margin-left: 5px;">
+    <% @year_list.each do |year| %>
+      <div style="font-size: 30px; margin 8px; padding: 2px;">
+        <span style="background-color: #130B06; padding: 5px; line-height: 2em; font-size: 30px;">
+          <%= link_to "/season/season_list/#{year}", class: "badge rounded-pill bg-secondary bg-lg edit-link card-link" do%>
+            <%= "#{year}年" %>
+          <% end %>
+        </span>
+      </div>
+    <% end %>
+  </div>

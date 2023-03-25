@@ -1,0 +1,2 @@
+history.replaceState('','',<%= @year %>);
+jQuery("#season-list").html("<%= j(render partial: "season/season_list", locals: {season_list: @season_list, works: @works, watches_season: @watches_season }) %>");

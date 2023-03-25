@@ -12,17 +12,16 @@
           </div>
         </li>
         <li class="drawer-menu-item">
-        <%= link_to "/users/my_page",data:{"turbolinks"=>false} do %>
-          <%= image_tag "twitter_hiromu.jpeg",{class: "rounded-circle", size: "80x80"} %>
-        <% end %>
+          <% if !current_user.nil? %>
+            <%= link_to "/users/my_page",data:{"turbolinks"=>false} do %>
+              <%= image_tag @current_user&.image, {size: "80x80", class: "rounded-pill"} %>
+            <% end %>
+          <% end %>
         </li>
         <%# ajaxで表示の切り替え %>
         <li class="display_mode-nav"></li>
         <li class="drawer-menu-item">
           <i class="far fa-smile"></i> <%= link_to "おもしろいアニメ", "#" %>
-        </li>
-        <li class="drawer-menu-item">
-          <i class="far fa-smile"></i> <%= link_to "twitter", "/auth/twitter" %>
         </li>
         <li class="drawer-menu-item">
           <% if logged_in? %>

@@ -1,16 +1,20 @@
 <div class="container">
 <div style="margin-top: 200px" id="modal" tabindex="-1" role="document">
   <div class="modal-dialog" role="dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">あに族へ入部する🎉</h5>
+    <div class="modal-content" style="background-color: #F1F1F1">
+      <div class="modal-header" style="background-color: #E70F19">
+        <h5 style="margin: 0 auto; opacity: 0.8; font-weight: bold;" class="modal-title edit-link">あ！にぞくへ入部する<i class="fas fa-door-open fa-lg"></i></h5>
       </div>
-      <div class="modal-body">
-        <p>Your Happy Anime Life Send.</p>
-      </div>
-      <div class="modal-footer">
-        <%= link_to "アカウント作成",new_user_path, class: "btn btn-outline-primary" %>
-        <%= link_to "ログイン",login_path, class: "btn btn-outline-dark" %>
+      <%# <div class="modal-body"></div> %>
+      <div style="margin: 6px">
+        <% @works_recomended.first(1).each do |work| %>
+          <span class="blur"><%= image_tag !work.facebook_og_image_url.blank? ? work.facebook_og_image_url : "no_image",alt: "#{work.title}",class: "img-thumbnail img-responsive img-rounded", size: "485x200" %></span>
+          <div class="modal-footer">
+            <%= link_to "/auth/twitter", class: "btn btn btn-outline-primary btn-block btn-lg" do%>
+              <i class="fab fa-twitter fa-1x"></i> Twitterでログイン
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

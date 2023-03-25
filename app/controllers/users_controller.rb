@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  helper_method :status_type, :season_type, :review_default_count, :review_total_count, :watches_total_count, :mylists_total_count, :konki_total_count, :zenki_total_count, :watch_count
+  helper_method :status_type, :season_type, :review_default_count, :review_total_count, :watches_total_count, :mylists_total_count, :konki_total_count, :zenki_total_count, :raiki_total_count, :watch_count
 
   def my_page
     @mode = 0
@@ -35,21 +35,21 @@ class UsersController < ApplicationController
     @user = User.new
   end
 
-  def create
-    #すでに入部済みかどうかの確認
-    @user = User.new(user_params)
-    #エラーが発生した場合
-    render "new" and return if @user.invalid?
-    if !User.find_by(email: params[:email]&.downcase)
-      @user.build_user_profile
-      if @user.save
-        logged_in @user
-        redirect_to static_pages_home_path, notice: "ようこそ、あに族へ！！"
-      else
-        render :new, alert: "登録に失敗しました" and return
-      end
-    end
-  end
+  # def create
+  #   #すでに入部済みかどうかの確認
+  #   @user = User.new(user_params)
+  #   #エラーが発生した場合
+  #   render "new" and return if @user.invalid?
+  #   if !User.find_by(email: params[:email]&.downcase)
+  #     @user.build_user_profile
+  #     if @user.save
+  #       logged_in @user
+  #       redirect_to static_pages_home_path, notice: "ようこそ、あに族へ！！"
+  #     else
+  #       render :new, alert: "登録に失敗しました" and return
+  #     end
+  #   end
+  # end
 
   #視聴ステータスを返す
   def status_type(watches, work_id)
@@ -87,6 +87,10 @@ class UsersController < ApplicationController
 
   def zenki_total_count
     return Work.content_this_term_list("前期").size
+  end
+
+  def raiki_total_count
+    return Work.content_next_term_list.size
   end
 
   def watch_count(mode=nil)
@@ -131,9 +135,11 @@ class UsersController < ApplicationController
     end
   end
 
-  private
-
-  def user_params
-    params.permit(:email, :password, :name)
+  #来期のアニメ一覧取得
+  def get_next_term_list
+    work_raiki_ids = Work.content_next_term_list
+    @next_term_list = Work.works_select(work_raiki_ids)
+    @watches_raiki_list =  Watch.exists?(user_id: current_user.id) ? Watch.where(user_id: current_user.id, work_id: work_raiki_ids) : ""
   end
+
 end

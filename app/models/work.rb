@@ -77,6 +77,12 @@ class Work < ApplicationRecord
     works_ids = where_season(false, year_join_nen(year) + current_season).ids
   end
 
+  def self.content_next_term_list
+    year = self.this_term
+    current_season = self.next_season
+    works_ids = where_season(false, year_join_nen(year) + current_season)&.ids
+  end
+
   def self.eager_load_worktags_ids(tag_id)
     Work.includes(:worktags).where(worktags: {tag_id: tag_id}).ids
   end
@@ -107,16 +113,29 @@ class Work < ApplicationRecord
 
   #現在/前期の季節を返す
   def self.current_season(mode=nil)
-    current_month = mode.nil? ? Time.current.month : Time.current.month - 3
+    current_month = mode.nil? ? Time.current.month : self.before_season
     case current_month
-      when 1, 2, 3 then
-        current_season = "冬"
-      when 4, 5, 6 then
-        current_season = "春"
-      when 7, 8, 9 then
-        current_season = "夏"
-      when 10, 11, 12 then
-        current_season = "秋"
+      when 1, 2, 3 then "冬"
+      when 4, 5, 6 then "春"
+      when 7, 8, 9 then "夏"
+      when 10, 11, 12 then "秋"
+    end
+  end
+
+  #3ヶ月前の「月」を返す
+  def self.before_season
+    month_ago = Time.now - 3.month
+    month_ago.month
+  end
+
+  #来期の季節を返す
+  def self.next_season
+    next_month = Time.current.month + 1 == 13 ? 1 : Time.current.month + 1
+    case next_month
+      when 1, 2, 3 then "冬"
+      when 4, 5, 6 then "春"
+      when 7, 8, 9 then "夏"
+      when 10, 11, 12 then "秋"
     end
   end
 
