@@ -1,7 +1,5 @@
 class User < ApplicationRecord
-  #ユーザーのトークンを一時的に保存する
   attr_accessor :remember_token
-  VALID_EMAIL_RAGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
 
   #レビュー情報を紐づける
   has_many :reviews, dependent: :destroy
@@ -16,14 +14,6 @@ class User < ApplicationRecord
   has_many :works, through: :mylists
   
   has_one :user_profile, dependent: :destroy
-  #user_profileに直接アクセスできるようにする
-  delegate :user_id, :nick_name, :image, :word, to: :user_profile
-
-  validates :email, presence: true, uniqueness: { case_sensitive: false }, length: { maximum: 255 }, format: { with: VALID_EMAIL_RAGEX }
-  validates :name,  presence: true
-  has_secure_password
-  #イメージ画像をアップロードするためのマウント
-  mount_uploader :image, ImageUploader
   
   #渡された文字列のハッシュ値を返す
   def digest(string)

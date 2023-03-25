@@ -94,4 +94,22 @@ jQuery(function() {
 
 	});
 
+	jQuery('.raiki-list').click(function() {
+		// コントローラへindexを渡す
+		$.ajax({
+			url: "/users/next_term_list",
+			type: "GET",
+			datatype: "json",
+			success: function(data){
+				//成功時の処理
+			},
+			error: function(data) {
+				console.log('error');
+				alert("URLが不正、もしくはこのURLには対応していません。");
+		}
+		
+		});
+
+	});
+
 });

@@ -22,6 +22,7 @@ gem 'selenium-webdriver'
 gem 'omniauth-twitter'
 gem 'omniauth'
 gem 'dotenv-rails'
+gem 'meta-tags'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.3', '>= 6.0.3.4'
@@ -58,6 +59,10 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+end
+
+group :production do
+  gem 'unicorn', '5.4.1'
 end
 
 gem "mimemagic", "~> 0.3.6"

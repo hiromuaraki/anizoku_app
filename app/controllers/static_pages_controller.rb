@@ -2,6 +2,10 @@ class StaticPagesController < ApplicationController
   helper_method :status_type
 
   def join_anizoku
+    #管理人のおすすめ30選
+    recomended_work_ids = Worktag.admin_recommended_list_work_id
+    works_recomended = Work.where_array(recomended_work_ids)
+    @works_recomended = Worktag.items_list_shuffle(works_recomended)
   end
 
   def home
@@ -10,6 +14,12 @@ class StaticPagesController < ApplicationController
     work_tags_ids = Worktag.admin_recommended_list_work_id year
     works = Work.where_array(work_tags_ids)
     @works = Worktag.items_list_shuffle(works)
+
+    #来期のアニメを取得する
+    work_raiki_ids = Work.content_next_term_list
+    raiki_shuffle_list  = Work.where_array(work_raiki_ids)
+    @work_contents_raiki_list = Worktag.items_list_shuffle(raiki_shuffle_list)
+    
 
     #今期のアニメを取得する
     work_konki_ids = Work.content_this_term_list
@@ -54,10 +64,14 @@ class StaticPagesController < ApplicationController
     #9件タグを表示する
     @tags = Tag.tag_list
 
+    #年代一覧を取得
+    @year_list = works_year
+
     #タグの件数を取得する
     tag_ids = Tag.eager_load(:worktags).ids
     @tag_group_count = home_group_by_tag_ids(tag_ids)
 
+    @watches_raiki =  Watch.exists?(user_id: current_user.id) ? Watch.where(user_id: current_user.id, work_id: work_raiki_ids) : ""
     @watches_konki =  Watch.exists?(user_id: current_user.id) ? Watch.where(user_id: current_user.id, work_id: work_konki_ids) : ""
     @watches_zenki =  Watch.exists?(user_id: current_user.id) ? Watch.where(user_id: current_user.id, work_id: work_zenki_ids) : ""
     @watches_recomended =  Watch.exists?(user_id: current_user.id) ? Watch.where(user_id: current_user.id, work_id: recomended_work_ids) : ""
@@ -85,6 +99,11 @@ class StaticPagesController < ApplicationController
   #視聴ステータスを返す
   def status_type(watches, work_id)
     Watch.type_status_equal(watches, work_id)
+  end
+
+  def works_year
+    work = Work.select(:season_year).order(season_year: :desc).first
+    year_list = (1980..work.season_year).to_a.reverse!
   end
 
 end

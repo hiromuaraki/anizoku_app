@@ -1,12 +1,10 @@
 Rails.application.routes.draw do
-  # root 'static_pages#join_anizoku'
-  root 'static_pages#home'
+  root 'static_pages#join_anizoku'
   namespace :static_pages do
     get :home
   end
+  
   get '/auth/:provider/callback', to: 'sessions#create'
-  # get '/login', to:'sessions#new'
-  # post '/login', to:'sessions#create'
   delete 'logout', to:'sessions#destroy'
   get '/display_mode', to: 'static_pages#display_mode'
   get '/tags/tag_list', to: 'tags#index'
@@ -24,6 +22,8 @@ Rails.application.routes.draw do
   get 'users/mylists/index', to: 'mylists#index'
   get 'users/this_term_list', to: 'users#get_this_term_list'
   get 'users/first_term_list', to: 'users#get_first_term_list'
+  get 'users/next_term_list', to: 'users#get_next_term_list'
+  get '/season/season_list/:year', to: 'season#season_list'
   
   namespace :admin do
     get :menu
@@ -37,7 +37,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # resources :works, except: :index
-  resources :users, only: [:new, :create]
+  resource :users, only: :create
   resources :reviews, except: :destroy
 end

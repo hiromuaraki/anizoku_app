@@ -394,6 +394,15 @@ hr {
 
 }
 
+.join_anizoku {
+  position:  absolute;        /* 要素の配置方法を指定 */
+  left: 380px;
+  top: 350px;
+  z-index: 99;
+
+}
+
+
 .konkilists {
   position:  absolute;        /* 要素の配置方法を指定 */
   left: 100px;
@@ -406,6 +415,11 @@ hr {
 .ele-border {
   border-bottom: 5px groove #E40A15;
   opacity: 0.5;
+}
+
+.blur{
+  -ms-filter: blur(6px);
+  filter: blur(6px);
 }
 
 

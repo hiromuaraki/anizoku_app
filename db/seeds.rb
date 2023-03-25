@@ -1,6 +1,7 @@
 #初期データの準備
 #季節ごとにworksデータは更新する|タグデータ随時更新|worksを更新したら関連tableも更新する
-
+#1.worksを季節ごとに更新 (2.charactersを更新 3.castsを更新⇨「work_title filedがある「casts」より取得する」)4.organizations 5.series 6.staffs 7.work_series 8.work_casts
+#9.dアニメよりスクレイピングし「サムネイル」を取得 10.dアニメよりスクレイピングし「キャスト」「スタッフ」データを取得
 
 require "net/http"
 require "uri"
@@ -124,6 +125,9 @@ CSV_FILE_HAREM = "ハーレム.csv"
 #APIの１Pの最大ページ数
 NEXT_PAGE_NO = 24
 
+#APIへアクセスするURL
+REQUEST_ANNICT_URL = "https://api.annict.com/v1/works?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM"
+
 #mainメソッド
 def common_add_model_data(name:)
   response = first_requst(name)
@@ -171,6 +175,21 @@ def valid_json?(string)
   end
 end
 
+#現在の季節を返す
+def current_season
+  case Time.current.month
+    when 1..3 then "winter"
+    when 4..6 then "spring"
+    when 7..9 then "summer"
+    when 10..12 then "autumn"
+  end
+end
+
+#現在の年を返す
+def current_year
+  Time.current.year
+end
+
 #各モデルごとに最終ページまでリクエストを繰り返す
 def response_not_nil?(response, req_name)
   page_no = 1
@@ -181,17 +200,12 @@ def response_not_nil?(response, req_name)
       #各モデルを追加する
       case req_name
         #characterとcastsは「casts」リクエストで行う  
-        when "casts" then
-          add_cast_data(data, null_list)
-          # add_character_data(data, null_list) 
-        when "organizations" then
-          add_organization_data(data)
-        when "staffs" then
-          add_staffs_data(data)
-        when "series" then
-          add_series_data(data, null_list)
-        when "works"  then
-          add_work_data
+        # when "casts" then add_cast_data(data, null_list)
+        when "casts" then add_character_data(data, null_list) 
+        when "organizations" then add_organization_data(data)
+        when "staffs" then add_staffs_data(data)
+        when "series" then add_series_data(data, null_list)
+        when "works"  then add_work_data
       end
 
       if index == NEXT_PAGE_NO
@@ -379,6 +393,7 @@ def add_series_data(series, null_list)
 end
 
 #キャラクターの追加
+#ロジック追加　現在年の季節ごとのworkデータを取得し、そのタイトルから絞り込んだデータのみ取得する
 def add_character_data(character, null_list)
   work = Work.find_by(title: character["work"]["title"])
   char =  Character.find_by(name: character["character"]["name"])
@@ -510,9 +525,47 @@ def add_work_data
   data = nil
   response[table_name].each do |work|
     #必ず条件を絞り込み検索
-    data = Work.find_by(title: work["title"], season_year: 2021)
+    data = Work.find_by(title: work["title"], season_year: current_year)
     data.nil? ? update_work_data(work) : update_work_data(work, data, "update")
   end
+end
+
+#現在年の季節ごとにアニメデータを追加
+def add_work_current_filter_season(page_no = 1, total_count = 0, index = 0)
+  season_list = ["winter", "spring", "summer", "autumn"]
+  response = request_api("#{REQUEST_ANNICT_URL}\&filter_season=#{current_year}-#{season_list[0]}\&page=#{page_no}")
+  data = nil
+  
+  #それぞれの季節ごとに取得件数分繰り返す
+  while total_count <= response["total_count"]
+    response["works"].each do |work|
+      #必ず条件を絞り込み検索
+      data = Work.find_by(title: work["title"])
+      puts "季節：#{work["season_name"]}"
+      data.nil? ? update_work_data(work) : update_work_data(work, data, "update")
+      total_count += 1
+    end
+    #次のページ数があるなら次のページ数を取得、ないなら季節を切り替えデータ取得
+    if response["next_page"].nil?
+      page_no = 1
+      total_count = 0
+      #季節を4周したら処理終了
+      return if index == 4
+      index += 1
+      response = request_api("#{REQUEST_ANNICT_URL}\&filter_season=#{current_year}-#{season_list[index]}\&page=#{page_no}")
+      puts "ページ切り替え：【#{index}】回目"
+    else
+      page_no += 1
+      response = request_api("#{REQUEST_ANNICT_URL}\&filter_season=#{current_year}-#{season_list[index]}\&page=#{page_no}")
+    end
+  end
+
+end
+
+#現在作成中 2023 1/29 開始地点の取得ロジックのみ考え中...
+def newest_add_casts_data(table="casts", page_no=?)
+  response = request_api("https://api.annict.com/v1/#{table}?access_token=jxP8gQxK0VAjiYCOQaBgBA82G-N5nfTNIEAKs6fuuwM&page=#{page_no.to_i}")
+
 end
 
 def update_work_data(work, data=nil, mode="add")
@@ -1082,13 +1135,16 @@ def add_work_series_data
 end
 
 # add_relation_works_series
-add_work_series_data
+# add_work_series_data
 
 #アニメを追加
 # add_work_data
 
+#アニメを現在の年の季節ごとに追加する
+add_work_current_filter_season
+
 #モデルをAPIを実行し追加（mainメソッド）
-# common_add_model_data(name: "series")
+# common_add_model_data(name: "casts")
 
 #csvファイルのdanimeのimageデータをモデルへ追加　or タグデータ追加
 # open_csv_model_create("description")

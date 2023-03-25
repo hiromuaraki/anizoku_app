@@ -13,7 +13,7 @@ set description = "生まれた環境が災いしてか、女の子に触られ�
 update works
 set description_source = "©あさのハジメ・メディアファクトリー／まよチキ！製作委員会" where id =3544;
 
-update works set facebook_og_image_url = "https://cs1.anime.dmkt-sp.jp/anime_kv/img/24/27/3/24273_1_9_8b.png" where id = 364;
+update works set facebook_og_image_url = "https://cs1.anime.dmkt-sp.jp/anime_kv/img/24/29/2/24292_1_9_8b.png" where id = 363;
 
 
 

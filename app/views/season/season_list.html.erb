@@ -1,29 +1,23 @@
-<div class="container" id="tag-list">
-  <h1 style="color: #FFF; padding: 20px;"><i class="fas fa-search"></i> 他のジャンルから探す</h1>
-  <div class="row ele-left">
-    <% @tags.each_with_index do |tag, i| %>
+<div class="container" id="season-list">
+  <h1 style="color: #FFF; padding: 20px;"><i class="fas fa-search"></i> 他の年代から探す<span class="box-title"><%= "#{@year}年 #{@works.size}" %>件</span></h1>
+  <h1 style="color: #FFF; margin-left: 5px;"></h1>
+  <div class="row">
+    <% @season_list.each_with_index do |season, i| %>
       <div style="font-size: 25px">
-        <span style="background-color: #130B06; padding: 5px; line-height: 2em; font-size: 25px;">
-          <%= link_to "/tags/work_list/#{tag.id}", class: "badge rounded-pill bg-secondary edit-link card-link", remote: true do%>
-            <%= tag.name %>
+        <span style="background-color: #130B06; padding: 5px; line-height: 2em; font-size: 30px;">
+          <%= link_to "/season/season_list/#{season}", class: "badge rounded-pill bg-secondary edit-link card-link" do%>
+            <%= "#{season}年" %>
           <% end %>
         </span>
       </div>
     <% end %>
-    <div style="margin-top: 40px; margin-left: 900px;">
-      <p class="edit-link right" style="font-size: 13px"><%= render partial: "shared/more-watch-modal-tags", locals: {tags: Tag.all} %></p>
-    </div>
   </div>
     <p></p>
-  <h1 style="color: #FFF; padding: 10px;"><i class="fas fa-tags"></i> <%= @tag.name %>(<%= @staff_works.blank? || @staff_works.size == 1 ? @works.size : @staff_works.size %>件)</h1>
-    <div class="row ele-left">
+    <div class="row">
       <div>
-        <% if @staff_works.blank? || @staff_works.size == 1%>
-          <% @season_list_works.keys.size.times do |count| %>
-            <h3 style="font-style: italic; color: #FFFFFF;"><span style="font-size: 25px" class="box-title"><%= "#{@season_list_works.keys[count]}年"%> <%= "(#{@season_list_works.values[count].size}件)" %><span></h3>
+        <% if @works.blank? || @works.size == 1%>
             <div class="row" style="box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32); border-radius: 2px; ">
               <% @works.each_with_index do |work, i| %>
-                <% if @season_list_works.keys[count] == work.season_year %>
                   <div style="margin-left: 5px">
                     <div class="parent" style="width: 140px; background-color: #E5E5E5;">
                       <p style="font-size: 15px; color: #FFF; margin: 0 auto; text-align: center; background-color: #E60914;"><%= work.season_name_text.slice(-1) %></p>
@@ -48,7 +42,7 @@
                                 ["見てる",  "watching"],
                                 ["見てない","not_watched"],
                                 ["見たい","want_watch"]
-                              ],{include_blank: "ステータスを選択", selected: !@watches_works.blank? ? status_type(@watches_works, work.id) : "ステータスを選択"},{class: "btn btn-block btn-success  dropdown-toggle",id: "select-form-#{i}",required: true, autofocus: "true", data: {work_id: work.id }}
+                              ],{include_blank: "ステータスを選択", selected: !@watches_season.blank? ? status_type(@watches_season, work.id) : "ステータスを選択"},{class: "btn btn-block btn-success  dropdown-toggle",id: "select-form-#{i}",required: true, autofocus: "true", data: {work_id: work.id }}
                           %>
                         <% end %>
                         <caption>
@@ -61,19 +55,16 @@
                     </div>
                     <p></p>
                   </div>
-                <% end %>
+                
               <% end %>
             </div>
             <p></p>
-          <% end %>
+          
 
         <% else %>
 
-            <% @season_list_staff.keys.size.times do |count| %>
-              <h3 style="font-style: italic; color: #FFFFFF;"><span style="font-size: 25px" class="box-title"><%= "#{@season_list_staff.keys[count]}年"%> <%= "(#{@season_list_staff.values[count].size}件)" %><span></h3>
               <div class="row" style="box-shadow: 0 2px 2px rgba(0, 0, 0, 0.32); border-radius: 2px; ">
-                <% @staff_works.each_with_index do |work, i| %>
-                  <% if @season_list_staff.keys[count] == work.season_year %>
+                <% @works.each_with_index do |work, i| %>
                     <div style="margin-left: 5px">
                       <div class="parent" style="width: 140px; background-color: #E5E5E5;">
                         <p style="font-size: 15px; color: #FFF; margin: 0 auto; text-align: center; background-color: #E60914;"><%= work.season_name_text.slice(-1) %></p>
@@ -98,7 +89,7 @@
                                   ["見てる",  "watching"],
                                   ["見てない","not_watched"],
                                   ["見たい","want_watch"]
-                                ],{include_blank: "ステータスを選択", selected: !@watches_staff.blank? ? status_type(@watches_staff, work.id) : "ステータスを選択"},{class: "btn btn-block btn-success  dropdown-toggle",id: "select-form-#{i}",required: true, autofocus: "true", data: {work_id: work.id }}
+                                ],{include_blank: "ステータスを選択", selected: !@watches_season.blank? ? status_type(@watches_season, work.id) : "ステータスを選択"},{class: "btn btn-block btn-success  dropdown-toggle",id: "select-form-#{i}",required: true, autofocus: "true", data: {work_id: work.id }}
                             %>
                           <% end %>
                           <caption>
@@ -111,11 +102,10 @@
                       </div>
                       <p></p>
                     </div>
-                  <% end %>
                 <% end %>
               </div>
               <p></p>
-            <% end %>
+            
           
           
             <%= javascript_pack_tag 'form/select-status' %>

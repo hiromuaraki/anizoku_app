@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <%# <%= favicon_link_tag("favicon.ico") %>
     <%= favicon_link_tag("あ_anizoku.jpeg") %>
-    <title>あに族</title>
+    <title>あ！にぞく</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <%# twitter cardの設定 %>
+    <%= display_meta_tags(default_meta_tags) %>
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>

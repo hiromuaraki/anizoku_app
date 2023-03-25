@@ -1,5 +1,6 @@
 <div class="row">
   <div id="mylists" class="ele-left">
+    <%= render "shared/share_tweet-button" %>
     
       <% @season_list.keys.size.times do |count| %>
         <h3 style="font-style: italic; color: #FFFFFF; margin-top: 20px; margin-bottom: 40px;"><span style="font-size: 20px" class="box-title"><%= "#{@season_list.keys[count]}年"%> <%= "(#{@season_list.values[count].size}件)" %><span></h3>
